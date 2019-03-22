@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Zigbee2MqttChannelConverter} ...TODO
+ * The {@link Zigbee2MqttChannelConverter} class...TODO
  *
  * @author Nils
  */

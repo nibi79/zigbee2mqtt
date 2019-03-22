@@ -13,6 +13,8 @@
 package org.openhab.binding.zigbee2mqtt.internal.discovery.result;
 
 /**
+ * The {@link DiscoveryResult} class...TODO
+ *
  * @author Nils
  *
  */

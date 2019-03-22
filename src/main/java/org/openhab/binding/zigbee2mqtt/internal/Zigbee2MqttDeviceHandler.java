@@ -50,7 +50,7 @@ import com.google.gson.JsonObject;
  * The{@link Zigbee2MqttDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author zigbee2mqtt - Initial contribution
+ * @author Nils
  */
 @NonNullByDefault
 public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee2MqttMessageSubscriber {
@@ -145,30 +145,36 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
                     Channel channel = getThing().getChannel(channelKey);
 
-                    switch (channel.getAcceptedItemType()) {
+                    if (channel != null) {
+                        String acceptedItemType = channel.getAcceptedItemType();
+                        if (acceptedItemType != null) {
+                            switch (acceptedItemType) {
 
-                        case ITEM_TYPE_NUMBER:
-                            updateState(channel.getUID(), new DecimalType(channelValue));
-                            break;
+                                case ITEM_TYPE_NUMBER:
+                                    updateState(channel.getUID(), new DecimalType(channelValue));
+                                    break;
 
-                        case ITEM_TYPE_STRING:
-                            triggerChannel(channel.getUID(), channelValue);
-                            break;
+                                case ITEM_TYPE_STRING:
+                                    triggerChannel(channel.getUID(), channelValue);
+                                    break;
 
-                        case ITEM_TYPE_CONTACT:
-                            updateState(channel.getUID(),
-                                    Boolean.parseBoolean(channelValue) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-                            break;
+                                case ITEM_TYPE_CONTACT:
+                                    updateState(channel.getUID(),
+                                            Boolean.parseBoolean(channelValue) ? OpenClosedType.CLOSED
+                                                    : OpenClosedType.OPEN);
+                                    break;
 
-                        case ITEM_TYPE_SWITCH:
-                            updateState(channel.getUID(),
-                                    Boolean.parseBoolean(channelValue) ? OnOffType.ON : OnOffType.OFF);
-                            break;
+                                case ITEM_TYPE_SWITCH:
+                                    updateState(channel.getUID(),
+                                            Boolean.parseBoolean(channelValue) ? OnOffType.ON : OnOffType.OFF);
+                                    break;
 
-                        default:
-                            channelValue = entry.getValue().getAsString();
-                            logger.warn("ThingUID: {} - channel not found -> channel: {}", thingId, channel);
-                            break;
+                                default:
+                                    channelValue = entry.getValue().getAsString();
+                                    logger.warn("ThingUID: {} - channel not found -> channel: {}", thingId, channel);
+                                    break;
+                            }
+                        }
                     }
                 } else {
                     logger.debug("ThingUID: {} - channel '{}' for device not found", thingId, channelKey);

@@ -7,12 +7,11 @@ Bundle-Name: Zigbee2Mqtt Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.zigbee2mqtt;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.mqtt,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

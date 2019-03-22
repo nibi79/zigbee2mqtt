@@ -17,6 +17,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+/**
+ * The {@link ChannelDiscovery} class...TODO
+ * 
+ * @author Nils
+ *
+ */
 public class ChannelDiscovery extends DiscoveryResult {
 
     private String id = null;

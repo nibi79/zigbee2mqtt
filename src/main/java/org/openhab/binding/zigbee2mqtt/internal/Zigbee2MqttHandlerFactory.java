@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * The {@link Zigbee2MqttHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author zigbee2mqtt - Initial contribution
+ * @author Nils
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.zigbee2mqtt", service = ThingHandlerFactory.class)

@@ -9,6 +9,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * The {@link Zigbee2MqttMessageSubscriber} class...TODO
+ *
+ * @author Nils
+ *
+ */
 public interface Zigbee2MqttMessageSubscriber extends MqttMessageSubscriber {
 
     final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDeviceHandler.class);

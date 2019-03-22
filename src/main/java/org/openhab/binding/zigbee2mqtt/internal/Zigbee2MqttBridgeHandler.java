@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -31,14 +32,13 @@ import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscribe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
  * The {@link Zigbee2MqttBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author zigbee2mqtt - Initial contribution
+ * @author Nils
  */
 public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbee2MqttMessageSubscriber {
 
@@ -47,10 +47,12 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttBridgeHandler.class);
 
     private MqttBrokerConnection mqttBrokerConnection;
+
+    @SuppressWarnings("unused")
     private @Nullable Zigbee2MqttDiscoveryService discoveryService;
 
-    @Nullable
-    private Zigbee2MqttBridgeConfiguration config;
+    @NonNull
+    private Zigbee2MqttBridgeConfiguration config = new Zigbee2MqttBridgeConfiguration();
 
     public Zigbee2MqttBridgeHandler(Bridge thing) {
         super(thing);
@@ -145,14 +147,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
         this.discoveryService = discoveryService;
     }
 
-    /**
-     * @return
-     */
-    private Zigbee2MqttBridgeConfiguration loadAndCheckConfiguration() {
-
-        return getConfigAs(Zigbee2MqttBridgeConfiguration.class);
-    }
-
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
@@ -168,16 +162,21 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
                 break;
             case "config":
                 String logLevel = jsonMessage.get("log_level").getAsString();
-                updateState(getThing().getChannel(CHANNEL_NAME_LOGLEVEL).getUID(), StringType.valueOf(logLevel));
+                Channel channelLogLevel = getThing().getChannel(CHANNEL_NAME_LOGLEVEL);
+                if (channelLogLevel != null) {
+                    updateState(channelLogLevel.getUID(), StringType.valueOf(logLevel));
+                }
 
                 String permitJoin = jsonMessage.get("permit_join").getAsString();
-                updateState(getThing().getChannel(CHANNEL_NAME_PERMITJOIN).getUID(),
-                        Boolean.parseBoolean(permitJoin) ? OnOffType.ON : OnOffType.OFF);
+                Channel channelPermitJoin = getThing().getChannel(CHANNEL_NAME_PERMITJOIN);
+                if (channelPermitJoin != null) {
+                    updateState(channelPermitJoin.getUID(),
+                            Boolean.parseBoolean(permitJoin) ? OnOffType.ON : OnOffType.OFF);
+                }
 
                 break;
             case "log":
-                String type = jsonMessage.get("type").getAsString();
-                JsonArray message = jsonMessage.get("message").getAsJsonArray();
+
                 // TODO mach was!
                 break;
             case "device_connected":
@@ -188,7 +187,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
             default:
                 break;
         }
-
     }
 
     /**

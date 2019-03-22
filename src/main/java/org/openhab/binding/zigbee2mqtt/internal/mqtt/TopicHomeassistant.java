@@ -1,5 +1,11 @@
 package org.openhab.binding.zigbee2mqtt.internal.mqtt;
 
+/**
+ * The {@link TopicHomeassistant} class...TODO
+ *
+ * @author Nils
+ *
+ */
 public class TopicHomeassistant {
 
     public static final String TOPIC_HOMEASSISTANT = "homeassistant/#";

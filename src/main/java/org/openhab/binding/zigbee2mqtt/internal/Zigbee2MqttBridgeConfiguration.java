@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.zigbee2mqtt.internal;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * The {@link Zigbee2MqttBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author mqttbroker - Initial contribution
+ * @author Nils
  */
 public class Zigbee2MqttBridgeConfiguration {
 
@@ -76,13 +74,20 @@ public class Zigbee2MqttBridgeConfiguration {
         this.mqttbrokerClientID = mqttbrokerClientID;
     }
 
+    // @Override
+    // public String toString() {
+    // return new ToStringBuilder(this).append("mqttbrokerIpAddress", this.getMqttbrokerIpAddress())
+    // .append("mqttbrokerPort", this.getMqttbrokerPort())
+    // .append("mqttbrokerBaseTopic", this.getMqttbrokerBaseTopic())
+    // .append("mqttbrokerUsername", this.getMqttbrokerUsername()).append("mqttbrokerPassword", "*****")
+    // .toString();
+    // }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("mqttbrokerIpAddress", this.getMqttbrokerIpAddress())
-                .append("mqttbrokerPort", this.getMqttbrokerPort())
-                .append("mqttbrokerBaseTopic", this.getMqttbrokerBaseTopic())
-                .append("mqttbrokerUsername", this.getMqttbrokerUsername()).append("mqttbrokerPassword", "*****")
-                .toString();
+        return "Zigbee2MqttBridgeConfiguration [mqttbrokerIpAddress=" + mqttbrokerIpAddress + ", mqttbrokerPort="
+                + mqttbrokerPort + ", mqttbrokerBaseTopic=" + mqttbrokerBaseTopic + ", mqttbrokerUsername="
+                + mqttbrokerUsername + "]";
     }
 
 }

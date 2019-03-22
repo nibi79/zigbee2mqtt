@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  * The {@link Zigbee2MqttBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author zigbee2mqtt - Initial contribution
+ * @author Nils
  */
 @NonNullByDefault
 public class Zigbee2MqttBindingConstants {
