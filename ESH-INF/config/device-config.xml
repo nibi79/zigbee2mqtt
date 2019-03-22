@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="binding:zigbee2mqtt:zigbee2mqttDevice">
+
+		<parameter-group name="zigbee2mqttDevice">
+			<label>Zigbee2Mqtt Device</label>
+			<description>The Zigbee2Mqtt Device represents a device with general settings and communication tasks.</description>
+		</parameter-group>
+
+		<parameter-group name="binding">
+			<label>Options</label>
+			<description>These settings affect functions of the binding.</description>
+		</parameter-group>
+
+		<parameter name="ieeeAddr" type="text" required="true">
+			<label>ieeeAddr</label>
+			<description>ieeeAddr of the Zigbee2Mqtt device</description>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

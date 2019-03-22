@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zigbee2mqtt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="zigbee2mqttDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="zigbee2mqttServer" />
+		</supported-bridge-type-refs>
+
+		<label>Zigbee2Mqtt Device</label>
+		<description>
+			<![CDATA[
+			A Zigbee2Mqtt device -each device function will be mapped to
+			a separate channel. The bridge is necessary as an intermediary between openHAB thing 
+			and Zigbee2Mqtt device.
+			]]>
+		</description>
+		<config-description-ref uri="binding:zigbee2mqtt:zigbee2mqttDevice" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zigbee2mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="zigbee2mqttServer">
+		<label>Zigbee2Mqtt Server</label>
+		<description>
+		  <![CDATA[
+            The Zigbee2Mqtt server represents a bridge with general settings and communication tasks.
+          ]]>
+		</description>
+
+		<channels>
+			<channel id="permitJoin" typeId="permitJoin" />
+			<channel id="logLevel" typeId="logLevel" />
+		</channels>
+
+		<config-description-ref uri="binding:zigbee2mqtt:zigbee2mqttServer" />
+
+	</bridge-type>
+
+	<channel-type id="permitJoin">
+		<item-type>Switch</item-type>
+		<label>PermitJoin</label>
+		<description>PermitJoin</description>
+	</channel-type>
+	<channel-type id="logLevel">
+		<item-type>String</item-type>
+		<label>LogLevel</label>
+		<description>Log Level</description>
+        <state>
+            <options>
+                <option value="debug">Debug</option>
+                <option value="info">Info</option>
+                <option value="warn">Warn</option>
+                <option value="error">Error</option>
+            </options>
+        </state>		
+	</channel-type>
+
+
+</thing:thing-descriptions>
