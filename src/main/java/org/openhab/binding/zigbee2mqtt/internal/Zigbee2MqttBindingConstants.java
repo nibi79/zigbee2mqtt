@@ -111,4 +111,20 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_NAME_STATE = "state";
     public static final String CHANNEL_LABEL_STATE = "State";
     public static final ChannelTypeUID CHANNEL_STATE = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_STATE);
+
+    public static final String CHANNEL_NAME_SWITCH = "switch";
+    public static final String CHANNEL_LABEL_SWITCH = "Switch";
+    public static final ChannelTypeUID CHANNEL_SWITCH = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_SWITCH);
+
+    public static final String CHANNEL_NAME_LIGHT = "light";
+    public static final String CHANNEL_LABEL_LIGHT = "Light";
+    public static final ChannelTypeUID CHANNEL_LIGHT = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_LIGHT);
+
+    public static final String CHANNEL_NAME_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_LABEL_BRIGHTNESS = "Brightness";
+    public static final ChannelTypeUID CHANNEL_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_BRIGHTNESS);
+
+    public static final String CHANNEL_NAME_COLORTEMP = "color_temp";
+    public static final String CHANNEL_LABEL_COLORTEMP = "Colortemp";
+    public static final ChannelTypeUID CHANNEL_COLORTEMP = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_COLORTEMP);
 }

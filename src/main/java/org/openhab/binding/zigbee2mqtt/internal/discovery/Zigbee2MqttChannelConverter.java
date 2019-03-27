@@ -18,12 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.ChannelDiscovery;
 import org.slf4j.Logger;
@@ -45,15 +47,17 @@ public class Zigbee2MqttChannelConverter {
      * @param thing
      * @return
      */
-    public List<Channel> convert(List<ChannelDiscovery> channelDiscoveries, Thing thing) {
+    public @NonNull List<Channel> convert(List<ChannelDiscovery> channelDiscoveries, Thing thing) {
 
         List<Channel> channels = new ArrayList<>();
 
         for (ChannelDiscovery channelDiscovery : channelDiscoveries) {
 
-            Channel channel = createChannel(channelDiscovery.getId(), channelDiscovery.getConfig(), thing.getUID());
-            if (channel != null) {
-                channels.add(channel);
+            List<Channel> newChannels = createChannel(channelDiscovery.getId(), channelDiscovery.getConfig(),
+                    thing.getUID());
+
+            if (!newChannels.isEmpty()) {
+                channels.addAll(newChannels);
             }
         }
 
@@ -69,70 +73,91 @@ public class Zigbee2MqttChannelConverter {
      * @param thingUID
      * @return
      */
-    private Channel createChannel(String channelId, Map<String, Object> config, ThingUID thingUID) {
+    private @NonNull List<Channel> createChannel(String channelId, Map<String, Object> config, ThingUID thingUID) {
 
-        Channel newChannel = null;
+        List<Channel> newChannels = new ArrayList<>();
 
         switch (channelId) {
 
             case CHANNEL_NAME_TEMPERATURE_VALUE:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_TEMPERATURE_VALUE,
-                        CHANNEL_LABEL_TEMPERATURE_VALUE);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_TEMPERATURE_VALUE,
+                        ChannelKind.STATE, CHANNEL_LABEL_TEMPERATURE_VALUE));
                 break;
 
             case CHANNEL_NAME_HUMIDITY_VALUE:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY_VALUE,
-                        CHANNEL_LABEL_HUMIDITY_VALUE);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY_VALUE,
+                        ChannelKind.STATE, CHANNEL_LABEL_HUMIDITY_VALUE));
                 break;
 
             case CHANNEL_NAME_ILLUMINANCE_VALUE:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_ILLUMINANCE_VALUE,
-                        CHANNEL_LABEL_ILLUMINANCE_VALUE);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_ILLUMINANCE_VALUE,
+                        ChannelKind.STATE, CHANNEL_LABEL_ILLUMINANCE_VALUE));
                 break;
 
             case CHANNEL_NAME_LINKQUALITY:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_LINKQUALITY,
-                        CHANNEL_LABEL_LINKQUALITY);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_LINKQUALITY,
+                        ChannelKind.STATE, CHANNEL_LABEL_LINKQUALITY));
                 break;
 
             case CHANNEL_NAME_OCCUPANCY_SENSOR:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_OCCUPANCY_SENSOR,
-                        CHANNEL_LABEL_OCCUPANCY_SENSOR);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_OCCUPANCY_SENSOR,
+                        ChannelKind.STATE, CHANNEL_LABEL_OCCUPANCY_SENSOR));
                 break;
 
             case CHANNEL_NAME_POWER_BATTERY:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_POWER_BATTERY,
-                        CHANNEL_LABEL_POWER_BATTERY);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_POWER_BATTERY,
+                        ChannelKind.STATE, CHANNEL_LABEL_POWER_BATTERY));
                 break;
 
             case CHANNEL_NAME_PRESSURE_VALUE:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE_VALUE,
-                        CHANNEL_LABEL_PRESSURE_VALUE);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE_VALUE,
+                        ChannelKind.STATE, CHANNEL_LABEL_PRESSURE_VALUE));
                 break;
 
             case CHANNEL_NAME_ACTION:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_ACTION,
-                        CHANNEL_LABEL_ACTION);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_ACTION,
+                        ChannelKind.TRIGGER, CHANNEL_LABEL_ACTION));
                 break;
 
             case CHANNEL_NAME_CLICK:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_CLICK,
-                        CHANNEL_LABEL_CLICK);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_CLICK,
+                        ChannelKind.TRIGGER, CHANNEL_LABEL_CLICK));
                 break;
 
             case CHANNEL_NAME_WATER_LEAK:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_WATER_LEAK,
-                        CHANNEL_LABEL_WATER_LEAK);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_WATER_LEAK,
+                        ChannelKind.STATE, CHANNEL_LABEL_WATER_LEAK));
                 break;
 
             case CHANNEL_NAME_CONTACT:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_CONTACT, CHANNEL_CONTACT,
-                        CHANNEL_LABEL_CONTACT);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_CONTACT, CHANNEL_CONTACT,
+                        ChannelKind.STATE, CHANNEL_LABEL_CONTACT));
                 break;
 
             case CHANNEL_NAME_STATE:
-                newChannel = createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_STATE,
-                        CHANNEL_LABEL_STATE);
+                newChannels.add(createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_STATE,
+                        ChannelKind.STATE, CHANNEL_LABEL_STATE));
+                break;
+
+            // Switch is State
+            case CHANNEL_NAME_SWITCH:
+                newChannels.add(createChannel(CHANNEL_NAME_STATE, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_STATE,
+                        ChannelKind.STATE, CHANNEL_LABEL_STATE));
+                break;
+
+            // Light is state, brgihtness...
+            case CHANNEL_NAME_LIGHT:
+                newChannels.add(createChannel(CHANNEL_NAME_STATE, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_STATE,
+                        ChannelKind.STATE, CHANNEL_LABEL_STATE));
+
+                if (Boolean.valueOf(config.get(CHANNEL_NAME_BRIGHTNESS).toString())) {
+                    newChannels.add(createChannel(CHANNEL_NAME_BRIGHTNESS, thingUID, config, ITEM_TYPE_DIMMER,
+                            CHANNEL_BRIGHTNESS, ChannelKind.STATE, CHANNEL_LABEL_BRIGHTNESS));
+                }
+                if (Boolean.valueOf(config.get(CHANNEL_NAME_COLORTEMP).toString())) {
+                    newChannels.add(createChannel(CHANNEL_NAME_COLORTEMP, thingUID, config, ITEM_TYPE_DIMMER,
+                            CHANNEL_COLORTEMP, ChannelKind.STATE, CHANNEL_LABEL_COLORTEMP));
+                }
                 break;
 
             default:
@@ -140,7 +165,7 @@ public class Zigbee2MqttChannelConverter {
                 break;
         }
 
-        return newChannel;
+        return newChannels;
     }
 
     /**
@@ -155,12 +180,12 @@ public class Zigbee2MqttChannelConverter {
      * @return
      */
     private Channel createChannel(String channelId, ThingUID thingUID, Map<String, Object> config, String itemType,
-            ChannelTypeUID channelTypeUID, String channelLabel) {
+            ChannelTypeUID channelTypeUID, ChannelKind channelKind, String channelLabel) {
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelId);
 
         Channel channel = ChannelBuilder.create(channelUID, itemType).withConfiguration(new Configuration(config))
-                .withType(channelTypeUID).withLabel(channelLabel).build();
+                .withType(channelTypeUID).withLabel(channelLabel).withKind(channelKind).build();
 
         return channel;
     }
