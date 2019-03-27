@@ -6,6 +6,7 @@ import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -26,9 +27,10 @@ public interface Zigbee2MqttMessageSubscriber extends MqttMessageSubscriber {
         logger.debug("incoming message for topic: {} -> {}", topic, message);
 
         JsonParser parser = new JsonParser();
-        JsonObject jsonMessage = parser.parse(message).getAsJsonObject();
-
-        processMessage(topic, jsonMessage);
+        JsonElement jsonMessage = parser.parse(message);
+        if (!jsonMessage.isJsonNull()) {
+            processMessage(topic, jsonMessage.getAsJsonObject());
+        }
     }
 
     /**
