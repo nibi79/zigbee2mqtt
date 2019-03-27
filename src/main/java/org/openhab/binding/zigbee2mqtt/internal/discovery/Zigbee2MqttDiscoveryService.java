@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
-import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstants;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
      *
      */
     public Zigbee2MqttDiscoveryService() {
-        super(Zigbee2MqttBindingConstants.SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
     }
 
     /**
@@ -66,7 +65,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
      * @throws IllegalArgumentException
      */
     public Zigbee2MqttDiscoveryService(Zigbee2MqttBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(Zigbee2MqttBindingConstants.SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -79,7 +78,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return Zigbee2MqttBindingConstants.SUPPORTED_THING_TYPES;
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override
@@ -128,26 +127,19 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
                 String model = jsonElement.getAsJsonObject().get("model").getAsString().replace(".", "_");
                 String friendlyName = jsonElement.getAsJsonObject().get("friendly_name").getAsString();
 
-                ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, "zigbee2mqttDevice");
-                if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+                ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, ieeeAddr);
 
-                    ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, ieeeAddr);
+                Map<String, Object> properties = new HashMap<>();
+                properties.put("ieeeAddr", ieeeAddr);
+                properties.put("type", type);
+                properties.put("model", model);
+                properties.put("friendly_name", friendlyName);
 
-                    Map<String, Object> properties = new HashMap<>();
-                    properties.put("ieeeAddr", ieeeAddr);
-                    properties.put("type", type);
-                    properties.put("model", model);
-                    properties.put("friendly_name", friendlyName);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                        .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
+                        .withLabel(friendlyName + " (" + model + ")").build();
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                            .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
-                            .withLabel(friendlyName + " (" + model + ")").build();
-
-                    thingDiscovered(discoveryResult);
-                } else {
-                    // TODO
-                    logger.warn("unknown device " + model);
-                }
+                thingDiscovered(discoveryResult);
 
             }
 

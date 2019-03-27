@@ -14,6 +14,9 @@ package org.openhab.binding.zigbee2mqtt.internal;
 
 import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +26,10 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,6 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttChannelConverter;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttChannelDiscovery;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttPropertyDiscovery;
@@ -55,27 +61,19 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee2MqttMessageSubscriber {
 
+    private static final BigDecimal VALUE_154 = BigDecimal.valueOf(154f);
+
+    private static final BigDecimal VALUE_3_46 = BigDecimal.valueOf(3.46f);
+
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDeviceHandler.class);
+
+    private static final int ROUNDING_PRECISION = 0;
+    private static final BigDecimal P100 = new BigDecimal(100);
+    private static final BigDecimal BRIGHTNESS_MAX = new BigDecimal(255);
+    private static final BigDecimal COLORTEMP_MAX = new BigDecimal(500);
 
     public Zigbee2MqttDeviceHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-
-        // if (CHANNEL_1.equals(channelUID.getId())) {
-        // if (command instanceof RefreshType) {
-        // // TODO: handle data refresh
-        // }
-        //
-        // // TODO: handle command
-        //
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information:
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
     }
 
     @Override
@@ -128,6 +126,78 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+
+        String commandvalue = command.toString();
+
+        Zigbee2MqttBridgeHandler bridgeHandler = getZigbee2MqttBridgeHandler();
+
+        if (command instanceof RefreshType) {
+            return;
+        }
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+
+        String commandTopic = (String) channel.getConfiguration().get("command_topic");
+
+        switch (channelUID.getId()) {
+
+            case CHANNEL_NAME_STATE:
+                String sMsg = createSetMessage(CHANNEL_NAME_STATE, String.valueOf(commandvalue));
+                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, sMsg.getBytes());
+                break;
+
+            case CHANNEL_NAME_BRIGHTNESS:
+                String bMsg = createSetMessage(CHANNEL_NAME_BRIGHTNESS + "_percent", String.valueOf(commandvalue));
+                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, bMsg.getBytes());
+                break;
+
+            case CHANNEL_NAME_COLORTEMP:
+                String cMsg = createSetMessage(CHANNEL_NAME_COLORTEMP + "_percent", String.valueOf(commandvalue));
+                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, cMsg.getBytes());
+                break;
+
+            case CHANNEL_NAME_COLOR:
+                String commandMsg = null;
+                if (command instanceof HSBType) {
+
+                    HSBType hsb = (HSBType) command;
+
+                    // xy
+                    PercentType[] xy = hsb.toXY();
+                    float x = Float.valueOf(xy[0].floatValue() / 100.0f);
+                    float y = Float.valueOf(xy[1].floatValue() / 100.0f);
+
+                    commandMsg = "{\"brightness_percent\": \"" + String.valueOf(hsb.getBrightness().toString()) + "\","
+                            + "\"color\": {" + "\"x\": " + String.valueOf(x) + "," + "\"y\": " + String.valueOf(y) + ""
+                            + "}}";
+
+                } else if (command instanceof PercentType) {
+
+                    commandMsg = createSetMessage(CHANNEL_NAME_BRIGHTNESS + "_percent", String.valueOf(commandvalue));
+                }
+
+                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, commandMsg.getBytes());
+                break;
+
+            default:
+                logger.debug("command for ChannelUID not supported: {}", channelUID.getAsString());
+                break;
+        }
+
+    }
+
+    /**
+     * @param key
+     * @param value
+     * @return
+     */
+    private String createSetMessage(String key, String value) {
+
+        return "{\"" + key + "\": \"" + value + "\"}";
+    }
+
+    @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
         String thingId = getThing().getUID().getId();
@@ -135,53 +205,92 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
         for (Entry<String, JsonElement> entry : jsonMessage.entrySet()) {
 
-            if (entry.getValue().isJsonPrimitive()) {
+            String channelKey = entry.getKey();
+            JsonElement channelValue = entry.getValue();
+            logger.debug("ThingUID: {} - channel: {}, value: {}", thingId, channelKey, channelValue);
 
-                String channelKey = entry.getKey();
-                String channelValue = entry.getValue().getAsString();
-                logger.debug("ThingUID: {} - channel: {}, value: {}", thingId, channelKey, channelValue);
+            if (getThing().getChannel(channelKey) != null) {
 
-                if (getThing().getChannel(channelKey) != null) {
+                Channel channel = getThing().getChannel(channelKey);
 
-                    Channel channel = getThing().getChannel(channelKey);
+                if (channel != null) {
 
-                    if (channel != null) {
-                        String acceptedItemType = channel.getAcceptedItemType();
-                        if (acceptedItemType != null) {
-                            switch (acceptedItemType) {
+                    switch (channelKey) {
 
-                                case ITEM_TYPE_NUMBER:
-                                    updateState(channel.getUID(), new DecimalType(channelValue));
-                                    break;
+                        case CHANNEL_NAME_TEMPERATURE_VALUE:
+                        case CHANNEL_NAME_LINKQUALITY:
+                        case CHANNEL_NAME_POWER_BATTERY:
+                        case CHANNEL_NAME_HUMIDITY_VALUE:
+                        case CHANNEL_NAME_PRESSURE_VALUE:
+                        case CHANNEL_NAME_ILLUMINANCE_VALUE:
+                            updateState(channel.getUID(), new DecimalType(channelValue.getAsString()));
+                            break;
 
-                                case ITEM_TYPE_STRING:
-                                    triggerChannel(channel.getUID(), channelValue);
-                                    break;
+                        case CHANNEL_NAME_COLORTEMP:
+                            BigDecimal cValue = new BigDecimal(channelValue.getAsString()).subtract(VALUE_154)
+                                    .divide(VALUE_3_46, ROUNDING_PRECISION, RoundingMode.HALF_UP);
+                            updateState(channel.getUID(), new PercentType(cValue));
+                            break;
 
-                                case ITEM_TYPE_CONTACT:
-                                    updateState(channel.getUID(),
-                                            Boolean.parseBoolean(channelValue) ? OpenClosedType.CLOSED
-                                                    : OpenClosedType.OPEN);
-                                    break;
+                        case CHANNEL_NAME_BRIGHTNESS:
+                            BigDecimal bValue = getPercentValue(BRIGHTNESS_MAX, channelValue.getAsString());
+                            updateState(channel.getUID(), new PercentType(bValue.round(new MathContext(2))));
+                            break;
 
-                                case ITEM_TYPE_SWITCH:
-                                    updateState(channel.getUID(),
-                                            Boolean.parseBoolean(channelValue) ? OnOffType.ON : OnOffType.OFF);
-                                    break;
+                        case CHANNEL_NAME_STATE:
+                            updateState(channel.getUID(), OnOffType.valueOf(channelValue.getAsString()));
+                            break;
 
-                                default:
-                                    channelValue = entry.getValue().getAsString();
-                                    logger.warn("ThingUID: {} - channel not found -> channel: {}", thingId, channel);
-                                    break;
-                            }
-                        }
+                        case CHANNEL_NAME_ACTION:
+                        case CHANNEL_NAME_CLICK:
+                            triggerChannel(channel.getUID(), channelValue.getAsString());
+                            break;
+
+                        case CHANNEL_NAME_CONTACT:
+                            updateState(channel.getUID(),
+                                    Boolean.parseBoolean(channelValue.getAsString()) ? OpenClosedType.CLOSED
+                                            : OpenClosedType.OPEN);
+                            break;
+
+                        case CHANNEL_NAME_COLOR:
+                            float x = channelValue.getAsJsonObject().get("x").getAsFloat();
+                            float y = channelValue.getAsJsonObject().get("y").getAsFloat();
+
+                            HSBType hsb = HSBType.fromXY(x, y);
+                            updateState(channel.getUID(), hsb);
+                            // brightness was set to 100%
+                            String brightness = jsonMessage.get("brightness").getAsString();
+                            BigDecimal b = getPercentValue(BRIGHTNESS_MAX, brightness);
+                            updateState(channel.getUID(), new PercentType(b.round(new MathContext(2))));
+                            break;
+
+                        case CHANNEL_NAME_WATER_LEAK:
+                        case CHANNEL_NAME_OCCUPANCY_SENSOR:
+                            updateState(channel.getUID(),
+                                    Boolean.parseBoolean(channelValue.getAsString()) ? OnOffType.ON : OnOffType.OFF);
+                            break;
+
+                        default:
+                            logger.warn("ThingUID: {} - channel not found -> channel: {}", thingId, channel);
+                            break;
                     }
-                } else {
-                    logger.debug("ThingUID: {} - channel '{}' for device not found", thingId, channelKey);
                 }
+            } else {
+                logger.debug("ThingUID: {} - channel '{}' for device not found", thingId, channelKey);
             }
         }
+    }
 
+    /**
+     * @param maxValue
+     * @param absoluteValue
+     * @return
+     */
+    private BigDecimal getPercentValue(BigDecimal maxValue, String absoluteValue) {
+
+        BigDecimal bValue = new BigDecimal(absoluteValue).multiply(P100).divide(maxValue, ROUNDING_PRECISION,
+                RoundingMode.HALF_UP);
+        return bValue;
     }
 
 }
