@@ -27,9 +27,20 @@ public interface Zigbee2MqttMessageSubscriber extends MqttMessageSubscriber {
         logger.debug("incoming message for topic: {} -> {}", topic, message);
 
         JsonParser parser = new JsonParser();
-        JsonElement jsonMessage = parser.parse(message);
-        if (!jsonMessage.isJsonNull()) {
-            processMessage(topic, jsonMessage.getAsJsonObject());
+        JsonElement msgJsonElement = parser.parse(message);
+        JsonObject msgJsonObject = null;
+
+        if (!msgJsonElement.isJsonObject()) {
+            msgJsonObject = new JsonObject();
+            msgJsonObject.add("message", msgJsonElement);
+        } else {
+            msgJsonObject = msgJsonElement.getAsJsonObject();
+        }
+
+        if (!msgJsonObject.isJsonNull()) {
+            processMessage(topic, msgJsonObject);
+        } else {
+            logger.warn("no valid message for topic: {} -> {}", topic, message);
         }
     }
 

@@ -157,7 +157,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
 
         switch (action) {
             case "state":
-                ThingStatus status = ThingStatus.valueOf(jsonMessage.getAsString().toUpperCase());
+                ThingStatus status = ThingStatus.valueOf(jsonMessage.get("message").getAsString().toUpperCase());
                 updateStatus(status);
                 break;
             case "config":
