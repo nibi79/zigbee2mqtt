@@ -176,12 +176,28 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
 
                 break;
             case "log":
+                String type = jsonMessage.get("type").getAsString();
+                String message = jsonMessage.get("message").getAsString();
 
-                // TODO mach was!
-                break;
-            case "device_connected":
+                switch (type) {
+                    case "pairing":
+                        // TODO
+                        logger.info(jsonMessage.toString());
+                        break;
+                    case "device_connected":
+                        // TODO add new device to inbox
+                        logger.info(jsonMessage.toString());
+                        break;
+                    case "zigbee_publish_error":
 
-                // TODO mach was!
+                        logger.error(jsonMessage.toString());
+                        break;
+
+                    default:
+                        logger.warn(jsonMessage.toString());
+                        break;
+                }
+
                 break;
 
             default:

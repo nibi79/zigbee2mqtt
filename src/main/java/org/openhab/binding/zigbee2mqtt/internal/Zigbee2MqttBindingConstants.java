@@ -102,7 +102,7 @@ public class Zigbee2MqttBindingConstants {
 
     public static final String CHANNEL_NAME_WATER_LEAK = "water_leak";
     public static final String CHANNEL_LABEL_WATER_LEAK = "Waterleak";
-    public static final ChannelTypeUID CHANNEL_WATER_LEAK = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_CLICK);
+    public static final ChannelTypeUID CHANNEL_WATER_LEAK = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_WATER_LEAK);
 
     public static final String CHANNEL_NAME_CONTACT = "contact";
     public static final String CHANNEL_LABEL_CONTACT = "Contact";
@@ -116,10 +116,6 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_LABEL_SWITCH = "Switch";
     public static final ChannelTypeUID CHANNEL_SWITCH = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_SWITCH);
 
-    public static final String CHANNEL_NAME_LIGHT = "light";
-    public static final String CHANNEL_LABEL_LIGHT = "Light";
-    public static final ChannelTypeUID CHANNEL_LIGHT = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_LIGHT);
-
     public static final String CHANNEL_NAME_BRIGHTNESS = "brightness";
     public static final String CHANNEL_LABEL_BRIGHTNESS = "Brightness";
     public static final ChannelTypeUID CHANNEL_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_BRIGHTNESS);
@@ -127,4 +123,13 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_NAME_COLORTEMP = "color_temp";
     public static final String CHANNEL_LABEL_COLORTEMP = "Colortemp";
     public static final ChannelTypeUID CHANNEL_COLORTEMP = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_COLORTEMP);
+
+    public static final String CHANNEL_NAME_COLOR = "color";
+    public static final String CHANNEL_LABEL_COLOR = "Color";
+    public static final ChannelTypeUID CHANNEL_COLOR = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_COLOR);
+
+    // pseudo channels
+    public static final String CHANNEL_NAME_LIGHT = "light";
+    public static final String CHANNEL_NAME_XY = "xy";
+
 }

@@ -53,7 +53,7 @@ public class Zigbee2MqttChannelConverter {
 
         for (ChannelDiscovery channelDiscovery : channelDiscoveries) {
 
-            List<Channel> newChannels = createChannel(channelDiscovery.getId(), channelDiscovery.getConfig(),
+            List<Channel> newChannels = createChannel(channelDiscovery.getObjetcId(), channelDiscovery.getConfig(),
                     thing.getUID());
 
             if (!newChannels.isEmpty()) {
@@ -157,6 +157,10 @@ public class Zigbee2MqttChannelConverter {
                 if (Boolean.valueOf(config.get(CHANNEL_NAME_COLORTEMP).toString())) {
                     newChannels.add(createChannel(CHANNEL_NAME_COLORTEMP, thingUID, config, ITEM_TYPE_DIMMER,
                             CHANNEL_COLORTEMP, ChannelKind.STATE, CHANNEL_LABEL_COLORTEMP));
+                }
+                if (Boolean.valueOf(config.get(CHANNEL_NAME_XY).toString())) {
+                    newChannels.add(createChannel(CHANNEL_NAME_COLOR, thingUID, config, ITEM_TYPE_COLOR,
+                            CHANNEL_COLORTEMP, ChannelKind.STATE, CHANNEL_LABEL_COLOR));
                 }
                 break;
 
