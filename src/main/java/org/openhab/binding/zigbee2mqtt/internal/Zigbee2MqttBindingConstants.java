@@ -102,7 +102,7 @@ public class Zigbee2MqttBindingConstants {
 
     public static final String CHANNEL_NAME_WATER_LEAK = "water_leak";
     public static final String CHANNEL_LABEL_WATER_LEAK = "Waterleak";
-    public static final ChannelTypeUID CHANNEL_WATER_LEAK = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_CLICK);
+    public static final ChannelTypeUID CHANNEL_WATER_LEAK = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_WATER_LEAK);
 
     public static final String CHANNEL_NAME_CONTACT = "contact";
     public static final String CHANNEL_LABEL_CONTACT = "Contact";
