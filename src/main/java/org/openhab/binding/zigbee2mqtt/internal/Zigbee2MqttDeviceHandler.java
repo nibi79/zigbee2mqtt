@@ -225,10 +225,10 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
                         // type sensors
                         // TODO implement sensors channels: power, lock, gas_density, cover
-                        case CHANNEL_NAME_ILLUMINANCE_VALUE:
+                        case CHANNEL_NAME_ILLUMINANCE:
                         case CHANNEL_NAME_HUMIDITY_VALUE:
-                        case CHANNEL_NAME_TEMPERATURE_VALUE:
-                        case CHANNEL_NAME_PRESSURE_VALUE:
+                        case CHANNEL_NAME_TEMPERATURE:
+                        case CHANNEL_NAME_PRESSURE:
                         case CHANNEL_NAME_LINKQUALITY:
                         case CHANNEL_NAME_POWER_BATTERY:
                             updateState(channel.getUID(), new DecimalType(channelValue.getAsString()));
@@ -254,7 +254,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                         // TODO implement binary-sensors channels: presence, smoke, gas, router, battery_low
                         // TODO use payload_on / payload_of for binary-sensors
                         case CHANNEL_NAME_WATER_LEAK:
-                        case CHANNEL_NAME_OCCUPANCY_SENSOR:
+                        case CHANNEL_NAME_OCCUPANCY:
                             updateState(channel.getUID(), channelValue.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
                             break;
 
