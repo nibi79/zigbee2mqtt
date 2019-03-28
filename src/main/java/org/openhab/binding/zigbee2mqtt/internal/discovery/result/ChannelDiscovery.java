@@ -19,14 +19,14 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The {@link ChannelDiscovery} class...TODO
- * 
+ *
  * @author Nils
  *
  */
 public class ChannelDiscovery extends DiscoveryResult {
 
-    private String id = null;
-    private String category = null;
+    private String objectId = null;
+    private String type = null;
     @NonNull
     private Map<String, Object> config = new HashMap<>();
 
@@ -37,20 +37,20 @@ public class ChannelDiscovery extends DiscoveryResult {
         super(topic, ieeeAddr);
     }
 
-    public String getId() {
-        return id;
+    public String getObjetcId() {
+        return objectId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setObjectId(String objetcId) {
+        this.objectId = objetcId;
     }
 
-    public String getCategory() {
-        return category;
+    public String getType() {
+        return type;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void getType(String type) {
+        this.type = type;
     }
 
     public Map<String, Object> getConfig() {
@@ -63,8 +63,8 @@ public class ChannelDiscovery extends DiscoveryResult {
 
     @Override
     public String toString() {
-        return "ChannelDiscovery [ieeeAddr=" + getIeeeAddr() + ", topic=" + getTopic() + ", id=" + id + ", category="
-                + category + "]";
+        return "ChannelDiscovery [ieeeAddr=" + getIeeeAddr() + ", topic=" + getTopic() + ", objectId=" + objectId
+                + ", type=" + type + "]";
     }
 
 }

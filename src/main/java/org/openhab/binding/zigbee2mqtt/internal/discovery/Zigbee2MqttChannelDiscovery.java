@@ -53,8 +53,8 @@ public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery<ChannelDis
             TopicHomeassistant topic = entry.getKey();
 
             ChannelDiscovery channelDiscovery = new ChannelDiscovery(topic.getTopic(), topic.getIeeeAddr());
-            channelDiscovery.setId(topic.getId());
-            channelDiscovery.setCategory(topic.getCategory());
+            channelDiscovery.setObjectId(topic.getObjectId());
+            channelDiscovery.getType(topic.getType());
 
             // channel config
             JsonObject json = entry.getValue();
@@ -65,7 +65,7 @@ public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery<ChannelDis
                 }
             }
 
-            channels.put(channelDiscovery.getId(), channelDiscovery);
+            channels.put(channelDiscovery.getObjetcId(), channelDiscovery);
 
             logger.debug("result entry processed: {}", channelDiscovery.toString());
         }

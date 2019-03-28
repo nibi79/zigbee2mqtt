@@ -12,9 +12,8 @@ public class TopicHomeassistant {
 
     private String topic = null;
     private String ieeeAddr = null;
-    private String id = null;
-
-    private String category = null;
+    private String objectId = null;
+    private String type = null;
 
     public TopicHomeassistant(String topic) {
 
@@ -24,8 +23,8 @@ public class TopicHomeassistant {
         // example: homeassistant/sensor/0x00158d0002320b4f/battery/config
         String[] topicParts = topic.split("/");
         this.ieeeAddr = topicParts[2];
-        this.id = topicParts[3];
-        this.category = topicParts[1];
+        this.objectId = topicParts[3];
+        this.type = topicParts[1];
     }
 
     public String getTopic() {
@@ -40,11 +39,17 @@ public class TopicHomeassistant {
         return ieeeAddr;
     }
 
-    public String getId() {
-        return id;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public String getCategory() {
-        return category;
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "TopicHomeassistant [ieeeAddr=" + getIeeeAddr() + ", topic=" + getTopic() + ", objectId=" + objectId
+                + ", type=" + type + "]";
     }
 }

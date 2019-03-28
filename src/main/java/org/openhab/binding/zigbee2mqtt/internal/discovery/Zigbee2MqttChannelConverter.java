@@ -53,7 +53,7 @@ public class Zigbee2MqttChannelConverter {
 
         for (ChannelDiscovery channelDiscovery : channelDiscoveries) {
 
-            List<Channel> newChannels = createChannel(channelDiscovery.getId(), channelDiscovery.getConfig(),
+            List<Channel> newChannels = createChannel(channelDiscovery.getObjetcId(), channelDiscovery.getConfig(),
                     thing.getUID());
 
             if (!newChannels.isEmpty()) {
