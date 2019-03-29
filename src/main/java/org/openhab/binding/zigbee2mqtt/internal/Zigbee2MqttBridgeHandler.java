@@ -132,16 +132,22 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
         if (command instanceof RefreshType) {
             return;
         }
-        if (CHANNEL_NAME_PERMITJOIN.equals(channelUID.getId())) {
 
-            String permitjoin = OnOffType.ON.toString().equals(command.toString()) ? "true" : "false";
-            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/permit_join",
-                    permitjoin.getBytes());
+        switch (channelUID.getId()) {
+            case CHANNEL_NAME_PERMITJOIN:
+                String permitjoin = OnOffType.ON.toString().equals(command.toString()) ? "true" : "false";
+                mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/permit_join",
+                        permitjoin.getBytes());
+                break;
 
-        } else if (CHANNEL_NAME_LOGLEVEL.equals(channelUID.getId())) {
+            case CHANNEL_NAME_LOGLEVEL:
+                String loglevel = command.toString();
+                mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/log_level",
+                        loglevel.getBytes());
+                break;
 
-            String loglevel = command.toString();
-            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/log_level", loglevel.getBytes());
+            default:
+                break;
         }
 
         logger.debug("command for ChannelUID not supported: {}", channelUID.getAsString());
