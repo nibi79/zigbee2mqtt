@@ -177,7 +177,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
                 break;
             case "log":
                 String type = jsonMessage.get("type").getAsString();
-                String message = jsonMessage.get("message").getAsString();
 
                 switch (type) {
                     case "pairing":
