@@ -61,8 +61,7 @@ public class Zigbee2MqttBindingConstants {
     // config channel binary_sensor
     public static final String CHANNEL_NAME_OCCUPANCY = "occupancy";
     public static final String CHANNEL_LABEL_OCCUPANCY = "Occupancy";
-    public static final ChannelTypeUID CHANNEL_OCCUPANCY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_NAME_OCCUPANCY);
+    public static final ChannelTypeUID CHANNEL_OCCUPANCY = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_OCCUPANCY);
 
     public static final String CHANNEL_NAME_PRESENCE = "presence";
     public static final String CHANNEL_LABEL_PRESENCE = "Presence";
@@ -99,8 +98,7 @@ public class Zigbee2MqttBindingConstants {
 
     public static final String CHANNEL_NAME_HUMIDITY = "humidity";
     public static final String CHANNEL_LABEL_HUMIDITY = "Humidity";
-    public static final ChannelTypeUID CHANNEL_HUMIDITY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_NAME_HUMIDITY);
+    public static final ChannelTypeUID CHANNEL_HUMIDITY = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_HUMIDITY);
 
     public static final String CHANNEL_NAME_TEMPERATURE = "temperature";
     public static final String CHANNEL_LABEL_TEMPERATURE = "Temperature";
@@ -164,7 +162,6 @@ public class Zigbee2MqttBindingConstants {
     public static final ChannelTypeUID CHANNEL_COLOR = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_COLOR);
 
     // pseudo channels
-    public static final String CHANNEL_NAME_LIGHT = "light";
     public static final String CHANNEL_NAME_XY = "xy";
 
 }
