@@ -70,7 +70,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
     }
 
     /**
-     * Public method for triggering camera discovery
+     * Public method for triggering device discovery
      */
     public void discover() {
         startScan();
