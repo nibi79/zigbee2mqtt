@@ -160,7 +160,6 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_NAME_COLOR = "color";
     public static final String CHANNEL_LABEL_COLOR = "Color";
     public static final ChannelTypeUID CHANNEL_COLOR = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_COLOR);
-
     // pseudo channels
     public static final String CHANNEL_NAME_XY = "xy";
 
