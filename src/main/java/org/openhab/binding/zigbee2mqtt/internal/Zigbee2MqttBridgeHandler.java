@@ -59,27 +59,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-
-        if (command instanceof RefreshType) {
-            return;
-        }
-        if (CHANNEL_NAME_PERMITJOIN.equals(channelUID.getId())) {
-
-            String permitjoin = OnOffType.ON.toString().equals(command.toString()) ? "true" : "false";
-            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/permit_join",
-                    permitjoin.getBytes());
-
-        } else if (CHANNEL_NAME_LOGLEVEL.equals(channelUID.getId())) {
-
-            String loglevel = command.toString();
-            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/log_level", loglevel.getBytes());
-        }
-
-        logger.debug("command for ChannelUID not supported: {}", channelUID.getAsString());
-    }
-
-    @Override
     public void initialize() {
 
         config = getConfigAs(Zigbee2MqttBridgeConfiguration.class);
@@ -101,6 +80,27 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
 
         mqttBrokerConnection.stop();
         super.dispose();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+
+        if (command instanceof RefreshType) {
+            return;
+        }
+        if (CHANNEL_NAME_PERMITJOIN.equals(channelUID.getId())) {
+
+            String permitjoin = OnOffType.ON.toString().equals(command.toString()) ? "true" : "false";
+            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/permit_join",
+                    permitjoin.getBytes());
+
+        } else if (CHANNEL_NAME_LOGLEVEL.equals(channelUID.getId())) {
+
+            String loglevel = command.toString();
+            mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/log_level", loglevel.getBytes());
+        }
+
+        logger.debug("command for ChannelUID not supported: {}", channelUID.getAsString());
     }
 
     /**
