@@ -49,7 +49,7 @@ public class ChannelDiscovery extends DiscoveryResult {
         return type;
     }
 
-    public void getType(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 

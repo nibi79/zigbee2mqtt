@@ -54,7 +54,7 @@ public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery<ChannelDis
 
             ChannelDiscovery channelDiscovery = new ChannelDiscovery(topic.getTopic(), topic.getIeeeAddr());
             channelDiscovery.setObjectId(topic.getObjectId());
-            channelDiscovery.getType(topic.getType());
+            channelDiscovery.setType(topic.getType());
 
             // channel config
             JsonObject json = entry.getValue();
