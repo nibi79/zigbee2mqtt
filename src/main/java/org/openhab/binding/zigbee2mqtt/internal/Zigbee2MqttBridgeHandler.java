@@ -190,8 +190,8 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
                         logger.info(jsonMessage.toString());
                         break;
                     case "device_connected":
-                        // TODO add new device to inbox
                         logger.info(jsonMessage.toString());
+                        discoveryService.discover();
                         break;
                     case "zigbee_publish_error":
 
@@ -208,6 +208,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
             default:
                 break;
         }
+
     }
 
     /**
