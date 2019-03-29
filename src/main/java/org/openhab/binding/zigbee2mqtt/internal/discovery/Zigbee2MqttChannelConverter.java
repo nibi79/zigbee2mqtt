@@ -55,7 +55,7 @@ public class Zigbee2MqttChannelConverter {
 
             Map<String, Object> config = channelDiscovery.getConfig();
 
-            String type = String.valueOf(config.get("type"));
+            String type = channelDiscovery.getType();
             if (type != null) {
 
                 switch (type) {
@@ -175,8 +175,8 @@ public class Zigbee2MqttChannelConverter {
 
             case CHANNEL_NAME_HUMIDITY:
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY,
-                        ChannelKind.STATE, CHANNEL_LABEL_HUMIDITY);
+                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY, ChannelKind.STATE,
+                        CHANNEL_LABEL_HUMIDITY);
 
             case CHANNEL_NAME_TEMPERATURE:
                 return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_TEMPERATURE,
@@ -184,8 +184,8 @@ public class Zigbee2MqttChannelConverter {
 
             case CHANNEL_NAME_PRESSURE:
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE,
-                        ChannelKind.STATE, CHANNEL_LABEL_PRESSURE);
+                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE, ChannelKind.STATE,
+                        CHANNEL_LABEL_PRESSURE);
 
             case CHANNEL_NAME_CLICK:
 
