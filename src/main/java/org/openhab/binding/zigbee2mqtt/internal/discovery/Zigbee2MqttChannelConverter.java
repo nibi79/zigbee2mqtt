@@ -130,7 +130,7 @@ public class Zigbee2MqttChannelConverter {
             // channel binary_sensor
             case CHANNEL_NAME_OCCUPANCY:
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_OCCUPANCY_SENSOR,
+                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_OCCUPANCY,
                         ChannelKind.STATE, CHANNEL_LABEL_OCCUPANCY);
 
             case CHANNEL_NAME_PRESENCE:
@@ -173,10 +173,10 @@ public class Zigbee2MqttChannelConverter {
                 return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_ILLUMINANCE,
                         ChannelKind.STATE, CHANNEL_LABEL_ILLUMINANCE);
 
-            case CHANNEL_NAME_HUMIDITY_VALUE:
+            case CHANNEL_NAME_HUMIDITY:
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY_VALUE,
-                        ChannelKind.STATE, CHANNEL_LABEL_HUMIDITY_VALUE);
+                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY,
+                        ChannelKind.STATE, CHANNEL_LABEL_HUMIDITY);
 
             case CHANNEL_NAME_TEMPERATURE:
                 return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_TEMPERATURE,
@@ -184,7 +184,7 @@ public class Zigbee2MqttChannelConverter {
 
             case CHANNEL_NAME_PRESSURE:
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE_VALUE,
+                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE,
                         ChannelKind.STATE, CHANNEL_LABEL_PRESSURE);
 
             case CHANNEL_NAME_CLICK:

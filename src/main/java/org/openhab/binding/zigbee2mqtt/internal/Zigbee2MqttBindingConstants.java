@@ -61,7 +61,7 @@ public class Zigbee2MqttBindingConstants {
     // config channel binary_sensor
     public static final String CHANNEL_NAME_OCCUPANCY = "occupancy";
     public static final String CHANNEL_LABEL_OCCUPANCY = "Occupancy";
-    public static final ChannelTypeUID CHANNEL_OCCUPANCY_SENSOR = new ChannelTypeUID(BINDING_ID,
+    public static final ChannelTypeUID CHANNEL_OCCUPANCY = new ChannelTypeUID(BINDING_ID,
             CHANNEL_NAME_OCCUPANCY);
 
     public static final String CHANNEL_NAME_PRESENCE = "presence";
@@ -97,10 +97,10 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_LABEL_ILLUMINANCE = "Illuminance";
     public static final ChannelTypeUID CHANNEL_ILLUMINANCE = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_ILLUMINANCE);
 
-    public static final String CHANNEL_NAME_HUMIDITY_VALUE = "humidity";
-    public static final String CHANNEL_LABEL_HUMIDITY_VALUE = "Humidity";
-    public static final ChannelTypeUID CHANNEL_HUMIDITY_VALUE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_NAME_HUMIDITY_VALUE);
+    public static final String CHANNEL_NAME_HUMIDITY = "humidity";
+    public static final String CHANNEL_LABEL_HUMIDITY = "Humidity";
+    public static final ChannelTypeUID CHANNEL_HUMIDITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_NAME_HUMIDITY);
 
     public static final String CHANNEL_NAME_TEMPERATURE = "temperature";
     public static final String CHANNEL_LABEL_TEMPERATURE = "Temperature";
@@ -108,7 +108,7 @@ public class Zigbee2MqttBindingConstants {
 
     public static final String CHANNEL_NAME_PRESSURE = "pressure";
     public static final String CHANNEL_LABEL_PRESSURE = "Pressure";
-    public static final ChannelTypeUID CHANNEL_PRESSURE_VALUE = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_PRESSURE);
+    public static final ChannelTypeUID CHANNEL_PRESSURE = new ChannelTypeUID(BINDING_ID, CHANNEL_NAME_PRESSURE);
 
     public static final String CHANNEL_NAME_CLICK = "click";
     public static final String CHANNEL_LABEL_CLICK = "Click";

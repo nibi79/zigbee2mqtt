@@ -226,7 +226,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                         // type sensors
                         // TODO implement sensors channels: power, lock, gas_density, cover
                         case CHANNEL_NAME_ILLUMINANCE:
-                        case CHANNEL_NAME_HUMIDITY_VALUE:
+                        case CHANNEL_NAME_HUMIDITY:
                         case CHANNEL_NAME_TEMPERATURE:
                         case CHANNEL_NAME_PRESSURE:
                         case CHANNEL_NAME_LINKQUALITY:
