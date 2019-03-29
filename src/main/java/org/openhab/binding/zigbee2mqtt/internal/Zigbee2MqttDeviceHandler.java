@@ -70,7 +70,6 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
     private static final int ROUNDING_PRECISION = 0;
     private static final BigDecimal P100 = new BigDecimal(100);
     private static final BigDecimal BRIGHTNESS_MAX = new BigDecimal(255);
-    private static final BigDecimal COLORTEMP_MAX = new BigDecimal(500);
 
     public Zigbee2MqttDeviceHandler(Thing thing) {
         super(thing);
