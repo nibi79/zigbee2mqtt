@@ -75,17 +75,23 @@ public class Zigbee2MqttChannelConverter {
 
                     case "light":
                         // brightness
-                        if (Boolean.valueOf(config.get(CHANNEL_NAME_BRIGHTNESS).toString())) {
+                        if (Boolean.valueOf(config.get(CHANNEL_NAME_BRIGHTNESS) != null
+                                ? config.get(CHANNEL_NAME_BRIGHTNESS).toString()
+                                : null)) {
                             Channel newChannel = createChannel(CHANNEL_NAME_BRIGHTNESS, config, thing.getUID());
                             channels.add(newChannel);
                         }
                         // color_temp
-                        if (Boolean.valueOf(config.get(CHANNEL_NAME_COLORTEMP).toString())) {
+                        if (Boolean.valueOf(config.get(CHANNEL_NAME_COLORTEMP) != null
+                                ? config.get(CHANNEL_NAME_COLORTEMP).toString()
+                                : null)) {
                             Channel newChannel = createChannel(CHANNEL_NAME_COLORTEMP, config, thing.getUID());
                             channels.add(newChannel);
                         }
                         // xy
-                        if (Boolean.valueOf(config.get(CHANNEL_NAME_XY).toString())) {
+                        // TODO review xy -> color?
+                        if (Boolean.valueOf(
+                                config.get(CHANNEL_NAME_XY) != null ? config.get(CHANNEL_NAME_XY).toString() : null)) {
                             Channel newChannel = createChannel(CHANNEL_NAME_COLOR, config, thing.getUID());
                             channels.add(newChannel);
                         }
@@ -109,6 +115,7 @@ public class Zigbee2MqttChannelConverter {
         String valueTemplate = String.valueOf(channelDiscovery.getConfig().get("value_template"));
 
         if (valueTemplate != null) {
+            // TODO check to use regex instead
             return valueTemplate.replace("{{ value_json.", "").replace(" }}", "");
         } else {
             return null;
