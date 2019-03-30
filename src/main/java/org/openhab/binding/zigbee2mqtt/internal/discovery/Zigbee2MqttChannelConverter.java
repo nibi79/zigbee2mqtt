@@ -74,26 +74,29 @@ public class Zigbee2MqttChannelConverter {
                         break;
 
                     case "light":
+                        // on/off
+                        channels.add(createChannel(CHANNEL_NAME_STATE, config, thing.getUID()));
+
                         // brightness
                         if (Boolean.valueOf(config.get(CHANNEL_NAME_BRIGHTNESS) != null
                                 ? config.get(CHANNEL_NAME_BRIGHTNESS).toString()
                                 : null)) {
-                            Channel newChannel = createChannel(CHANNEL_NAME_BRIGHTNESS, config, thing.getUID());
-                            channels.add(newChannel);
+
+                            channels.add(createChannel(CHANNEL_NAME_BRIGHTNESS, config, thing.getUID()));
                         }
                         // color_temp
                         if (Boolean.valueOf(config.get(CHANNEL_NAME_COLORTEMP) != null
                                 ? config.get(CHANNEL_NAME_COLORTEMP).toString()
                                 : null)) {
-                            Channel newChannel = createChannel(CHANNEL_NAME_COLORTEMP, config, thing.getUID());
-                            channels.add(newChannel);
+
+                            channels.add(createChannel(CHANNEL_NAME_COLORTEMP, config, thing.getUID()));
                         }
                         // xy
                         // TODO review xy -> color?
                         if (Boolean.valueOf(
                                 config.get(CHANNEL_NAME_XY) != null ? config.get(CHANNEL_NAME_XY).toString() : null)) {
-                            Channel newChannel = createChannel(CHANNEL_NAME_COLOR, config, thing.getUID());
-                            channels.add(newChannel);
+
+                            channels.add(createChannel(CHANNEL_NAME_COLOR, config, thing.getUID()));
                         }
 
                         break;
