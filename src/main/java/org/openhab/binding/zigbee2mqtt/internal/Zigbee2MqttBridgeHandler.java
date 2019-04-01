@@ -14,6 +14,8 @@ package org.openhab.binding.zigbee2mqtt.internal;
 
 import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstants.*;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +29,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttDiscoveryService;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
@@ -40,7 +44,8 @@ import com.google.gson.JsonObject;
  *
  * @author Nils
  */
-public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbee2MqttMessageSubscriber {
+public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
+        implements Zigbee2MqttMessageSubscriber, MqttConnectionObserver {
 
     private static final byte[] HEARTBEAT = "heartbeat".getBytes();
 
@@ -61,14 +66,24 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     @Override
     public void initialize() {
 
-        config = getConfigAs(Zigbee2MqttBridgeConfiguration.class);
+        try {
 
-        mqttBrokerConnection = createBrokerConnection(config);
-        getMqttBrokerConnection().start();
+            config = getConfigAs(Zigbee2MqttBridgeConfiguration.class);
 
-        mqttBrokerConnection.subscribe(getMqttbrokerBaseTopic() + "/bridge/#", this);
+            mqttBrokerConnection = createBrokerConnection(config);
+            mqttBrokerConnection.addConnectionObserver(this);
 
-        mqttBrokerConnection.publish(getMqttbrokerBaseTopic() + "/bridge/config/devices", HEARTBEAT);
+            if (!mqttBrokerConnection.start().get().booleanValue()) {
+
+                logger.error("Cannot connect to broker: {}", config.toString());
+                updateStatus(ThingStatus.OFFLINE);
+            }
+
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error(e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE);
+        }
+
     }
 
     public void setDiscoveryService(Zigbee2MqttDiscoveryService discoveryService) {
@@ -78,8 +93,14 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     @Override
     public void dispose() {
 
-        mqttBrokerConnection.stop();
-        super.dispose();
+        try {
+            mqttBrokerConnection.stop().get().booleanValue();
+
+            super.dispose();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error(e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     /**
@@ -113,6 +134,11 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
+
+        if (ThingStatus.ONLINE.equals(status)) {
+
+            discoveryService.discover();
+        }
     }
 
     /**
@@ -155,9 +181,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
 
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
-
-        // retrieve message so it is ONLINE
-        updateStatus(ThingStatus.ONLINE);
 
         String action = topic.replaceFirst(config.getMqttbrokerBaseTopic() + "/bridge/", "");
 
@@ -217,6 +240,28 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler implements Zigbe
     public String getMqttbrokerBaseTopic() {
 
         return config.getMqttbrokerBaseTopic();
+    }
+
+    @Override
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+
+        logger.debug("Broker connection changed to: {}", state.toString());
+
+        switch (state.toString()) {
+            case "DISCONNECTED":
+                updateStatus(ThingStatus.OFFLINE);
+                break;
+            case "CONNECTION":
+                updateStatus(ThingStatus.UNKNOWN);
+                break;
+            case "CONNECTED":
+                updateStatus(ThingStatus.UNKNOWN);
+                mqttBrokerConnection.subscribe(getMqttbrokerBaseTopic() + "/bridge/#", this);
+                break;
+
+            default:
+                break;
+        }
     }
 
 }
