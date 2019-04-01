@@ -137,6 +137,12 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
         Channel channel = getThing().getChannel(channelUID.getId());
 
+        if (channel.getConfiguration().get("command_topic") != null) {
+
+            logger.debug("channel has no command topic!");
+            return;
+        }
+
         String commandTopic = (String) channel.getConfiguration().get("command_topic");
 
         switch (channelUID.getId()) {
