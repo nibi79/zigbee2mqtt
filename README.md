@@ -39,7 +39,7 @@ Currently following Things are supported:
 
 ## Discovery
 
-After configuring **Zigbee2Mqtt Server** and the server goes ONLINE, you can manually start discovery. If successful, your devices will be found and can be added without further configuration.
+After configuring the **Zigbee2Mqtt Server**, automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration.
 
 ## Binding Configuration
 
