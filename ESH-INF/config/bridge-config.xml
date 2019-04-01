@@ -38,8 +38,7 @@
 
 		<parameter name="mqttbrokerUsername" groupName="zigbee2mqttServer" type="text">
 			<label>Username</label>
-			<description>Username to access the MQTT-Broker.</description>
-			<default>admin</default>
+			<description>Username to access the MQTT-Broker.</description>			
 		</parameter>
 
 		<parameter name="mqttbrokerPassword" groupName="zigbee2mqttServer" type="text">
