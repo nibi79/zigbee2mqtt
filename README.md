@@ -22,8 +22,8 @@ This binding is currently under development. Your help and testing would be grea
 
 ## Prerequisites
 
-- A working Zigbee2Mqtt installation with paired devices
-- Enable 'homeassistant' 
+- A working Zigbee2Mqtt installation (https://github.com/Koenkk/zigbee2mqtt)
+- Enable 'homeassistant' in data/configuration.yaml (http://www.zigbee2mqtt.io/configuration/configuration.html)
 
 ## Installation and upgrade
 
@@ -34,16 +34,16 @@ For an upgrade the existing file should be overwritten. On major or structural c
 
 Currently following Things are supported:
 
-- **Zigbee2Mqtt Bridge** Thing representing the Zigbee2Mqtt server
+- **Zigbee2Mqtt Server** Thing representing the Zigbee2Mqtt server
 - One or many Things for supported **Zigbee2Mqtt Device**
 
 ## Discovery
 
-_TODO_
+After configuring the **Zigbee2Mqtt Server**, automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration.
 
 ## Binding Configuration
 
-Following options can be set for the **Zigbee2Mqtt Bridge**:
+Following options can be set for the **Zigbee2Mqtt Server**:
 
 - IP-Address or hostname of the MQTT-Broker
 - Port of the MQTT-Broker
@@ -54,7 +54,7 @@ Following options can be set for the **Zigbee2Mqtt Bridge**:
 
 ## Channels
 
-Currently following **Channels** are supported on the **Zigbee2Mqtt Bridge**:
+Currently following **Channels** are supported on the **Zigbee2Mqtt Server**:
 
 - permitJoin
 - logLevel
