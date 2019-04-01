@@ -1,0 +1,4 @@
+Unresolved requirement: Import-Package: org.eclipse.jdt.annotation; resolution:="optional"
+Unresolved requirement: Import-Package: org.eclipse.smarthome.io.transport.mqtt
+
+ -> feature:install esh-io-transport-mqtt
