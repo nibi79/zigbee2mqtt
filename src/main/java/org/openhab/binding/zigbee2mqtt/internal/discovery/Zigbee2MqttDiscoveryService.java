@@ -124,6 +124,9 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
                 properties.put("model", model);
                 properties.put("friendly_name", friendlyName);
 
+                logger.debug("device disvocered [ieeeAddr=" + ieeeAddr + ", type=" + type + ", model=" + model
+                        + ", friendlyName=" + friendlyName + "]");
+
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
                         .withLabel(friendlyName + " (" + model + ")").build();
