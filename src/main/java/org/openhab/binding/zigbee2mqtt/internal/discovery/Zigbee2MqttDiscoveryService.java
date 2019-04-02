@@ -26,15 +26,14 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
-import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
+import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * The {@link Zigbee2MqttDiscoveryService} is a service for discovering your cameras through Synology API
@@ -42,7 +41,7 @@ import com.google.gson.JsonParser;
  * @author Nils
  */
 // @Component(service = Zigbee2MqttDiscoveryService.class, immediate = true, configurationPid = "discovery.zgbee2mqtt")
-public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implements MqttMessageSubscriber {
+public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implements Zigbee2MqttMessageSubscriber {
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDiscoveryService.class);
 
@@ -107,16 +106,13 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
     }
 
     @Override
-    public void processMessage(@NonNull String topic, byte @NonNull [] payload) {
+    public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        JsonParser parser = new JsonParser();
-
-        JsonObject json = parser.parse(new String(payload)).getAsJsonObject();
-        String messageType = json.get("type").getAsString();
+        String messageType = jsonMessage.get("type").getAsString();
 
         if ("devices".equals(messageType)) {
 
-            JsonArray message = json.get("message").getAsJsonArray();
+            JsonArray message = jsonMessage.get("message").getAsJsonArray();
 
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
