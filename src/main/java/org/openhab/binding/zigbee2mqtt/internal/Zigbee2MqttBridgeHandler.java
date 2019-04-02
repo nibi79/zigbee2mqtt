@@ -14,6 +14,7 @@ package org.openhab.binding.zigbee2mqtt.internal;
 
 import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstants.*;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
@@ -262,6 +263,49 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
             default:
                 break;
         }
+    }
+
+    /**
+     * Add a new message consumer to this connection. Multiple subscribers with the same
+     * topic are allowed. This method will not protect you from adding a subscriber object
+     * multiple times!
+     *
+     * If there is a retained message for the topic, you are guaranteed to receive a callback
+     * for each new subscriber, even for the same topic.
+     *
+     * @param topic      The topic to subscribe to.
+     * @param subscriber The callback listener for received messages for the given topic.
+     * @return Completes with true if successful. Completes with false if not connected yet. Exceptionally otherwise.
+     */
+    public CompletableFuture<Boolean> subscribe(String topic, Zigbee2MqttMessageSubscriber subsriber) {
+        logger.debug("subsribe to topic -> {}", topic);
+        return mqttBrokerConnection.subscribe(topic, subsriber);
+    }
+
+    /**
+     * Publish a message to the broker.
+     *
+     * @param topic   The topic
+     * @param message The message
+     * @return Returns a future that completes with a result of true if the publishing succeeded and completes
+     *         exceptionally on an error or with a result of false if no broker connection is established.
+     */
+    public CompletableFuture<Boolean> publish(String topic, String message) {
+        logger.debug("publish messeage to topic -> {}", topic);
+        return mqttBrokerConnection.publish(topic, message.getBytes());
+    }
+
+    /**
+     * Remove a previously registered consumer from this connection.
+     * If no more consumers are registered for a topic, the topic will be unsubscribed from.
+     *
+     * @param topic      The topic to unsubscribe from.
+     * @param subscriber The callback listener to remove.
+     * @return Completes with true if successful. Exceptionally otherwise.
+     */
+    public CompletableFuture<Boolean> unsubscribe(String topic, Zigbee2MqttMessageSubscriber subsriber) {
+        logger.debug("unsubsribe from topic -> {}", topic);
+        return mqttBrokerConnection.unsubscribe(topic, subsriber);
     }
 
 }

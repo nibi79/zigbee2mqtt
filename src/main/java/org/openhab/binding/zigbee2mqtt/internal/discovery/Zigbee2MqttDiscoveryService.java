@@ -25,7 +25,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
@@ -93,15 +92,9 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
             return;
         }
 
-        MqttBrokerConnection mqttBrokerConnection = bridgeHandler.getMqttBrokerConnection();
+        bridgeHandler.subscribe(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/log", this);
 
-        mqttBrokerConnection.subscribe(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/log", this);
-
-        byte[] payload = "ds".getBytes();
-        mqttBrokerConnection.publish(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/config/devices", payload);
-
-        // Thread.sleep(10000);
-        // mqttBrokerConnection.unsubscribe("zigbee2mqtt/bridge/log", subscriber);
+        bridgeHandler.publish(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/config/devices", "ds");
 
     }
 
