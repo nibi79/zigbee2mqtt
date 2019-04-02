@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.DiscoveryResult;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.TopicHomeassistant;
@@ -96,12 +95,10 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
             return false;
         }
 
-        MqttBrokerConnection mqttBrokerConnection = bridgeHandler.getMqttBrokerConnection();
-
         try {
 
             logger.debug("mqtt: subribe to topic '{}'", TOPIC_CHANNELDISCOVERY);
-            mqttBrokerConnection.subscribe(TOPIC_CHANNELDISCOVERY, this);
+            bridgeHandler.subscribe(TOPIC_CHANNELDISCOVERY, this);
 
             // pause until channels discovered form homeassistant topic
             Thread.sleep(2000);
@@ -115,7 +112,7 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
         } finally {
 
             logger.debug("mqtt: unsubribe from topic '{}'", TOPIC_CHANNELDISCOVERY);
-            mqttBrokerConnection.unsubscribe(TOPIC_CHANNELDISCOVERY, this);
+            bridgeHandler.unsubscribe(TOPIC_CHANNELDISCOVERY, this);
         }
 
     }

@@ -83,8 +83,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
         if (bridgeHandler != null) {
             String ieeeAddr = getThing().getUID().getId();
 
-            bridgeHandler.getMqttBrokerConnection().subscribe(bridgeHandler.getMqttbrokerBaseTopic() + "/" + ieeeAddr,
-                    this);
+            bridgeHandler.subscribe(bridgeHandler.getMqttbrokerBaseTopic() + "/" + ieeeAddr, this);
 
             ThingBuilder thingBuilder = editThing();
 
