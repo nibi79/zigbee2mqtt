@@ -49,8 +49,9 @@ public class Zigbee2MqttBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_NAME_LOGLEVEL = "logLevel";
-
     public static final String CHANNEL_NAME_PERMITJOIN = "permitJoin";
+    public static final String CHANNEL_NAME_NETWORKMAP = "networkMap";
+
     public static final String ITEM_TYPE_COLOR = "Color";
     public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";

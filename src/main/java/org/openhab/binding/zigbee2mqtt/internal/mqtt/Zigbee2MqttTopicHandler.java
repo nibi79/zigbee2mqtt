@@ -67,6 +67,14 @@ public class Zigbee2MqttTopicHandler {
     }
 
     /**
+     * @return {@literal <baseTopic>/bridge/networkmap/graphviz}
+     */
+    public String getTopicBridgeNetworkmapGraphviz() {
+
+        return baseTopic.concat("/bridge/networkmap/graphviz");
+    }
+
+    /**
      * @return {@literal <baseTopic>/bridge/config/permit_join}
      */
     public String getTopicBridgePermitjoin() {

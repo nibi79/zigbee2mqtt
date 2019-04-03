@@ -1,7 +1,14 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.zigbee2mqtt
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/graphviz-java-0.8.3.jar,
+ lib/svgSalamander-1.1.2.jar,
+ lib/j2v8_win32_x86-4.6.0.jar,
+ lib/j2v8_win32_x86_64-4.6.0.jar,
+ lib/j2v8_linux_x86_64-4.6.0.jar,
+ lib/j2v8_macosx_x86_64-4.6.0.jar,
+ lib/viz.js-2.1.2.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Zigbee2Mqtt Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -10,6 +17,8 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
+ org.apache.commons.exec,
+ org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,

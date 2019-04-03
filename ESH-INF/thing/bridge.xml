@@ -15,6 +15,7 @@
 		<channels>
 			<channel id="permitJoin" typeId="permitJoin" />
 			<channel id="logLevel" typeId="logLevel" />
+			<channel id="networkMap" typeId="networkMap" />
 		</channels>
 
 		<config-description-ref uri="binding:zigbee2mqtt:zigbee2mqttServer" />
@@ -39,6 +40,11 @@
             </options>
         </state>		
 	</channel-type>
+    <channel-type id="networkMap">
+        <item-type>Image</item-type>
+        <label>networkmap</label>
+        <description>networkmap</description>
+    </channel-type>	
 
 
 </thing:thing-descriptions>

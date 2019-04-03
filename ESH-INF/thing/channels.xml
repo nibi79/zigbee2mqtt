@@ -8,7 +8,7 @@
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.2f °C" />	
+		<state readOnly="true" pattern="%.2f °C" />
 	</channel-type>
 
 	<channel-type id="illuminance">
@@ -104,35 +104,35 @@
 		<category>linkquality</category>
 		<state readOnly="true" />
 	</channel-type>
-	
+		
 	<channel-type id="brightness">
 		<item-type>Number</item-type>
 		<label>Brightness</label>
 		<category>brightness</category>
 		<state/>
 	</channel-type>
-	
+
 	<channel-type id="color_temp">
 		<item-type>Number</item-type>
 		<label>Color temperature</label>
 		<category>color_temp</category>
 		<state/>
 	</channel-type>
-	
+
 	<channel-type id="click">
 		<item-type>String</item-type>
 		<label>Click event</label>
 		<category>click</category>
 		<state/>
 	</channel-type>
-	
+
 	<channel-type id="action">
 		<item-type>String</item-type>
 		<label>Action event</label>
 		<category>action</category>
 		<state/>
 	</channel-type>
-	
+
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>State</label>
@@ -140,11 +140,10 @@
 		<state/>
 	</channel-type>
 
-
-
-
-	<!-- Special channel types -->
-
-
+    <channel-type id="networkmap-channel">
+        <item-type>Image</item-type>
+        <label>networkmap</label>
+        <description>networkmap</description>
+    </channel-type>
 
 </thing:thing-descriptions>
