@@ -56,7 +56,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
     private MqttBrokerConnection mqttBrokerConnection;
 
-    @SuppressWarnings("unused")
     private @Nullable Zigbee2MqttDiscoveryService discoveryService;
 
     @NonNull
