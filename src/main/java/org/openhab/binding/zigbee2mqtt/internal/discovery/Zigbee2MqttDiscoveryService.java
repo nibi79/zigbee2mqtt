@@ -35,7 +35,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link Zigbee2MqttDiscoveryService} is a service for discovering your cameras through Synology API
+ * The {@link Zigbee2MqttDiscoveryService} is a service for discovering your zigbee2mqttDevices
  *
  * @author Nils
  */
