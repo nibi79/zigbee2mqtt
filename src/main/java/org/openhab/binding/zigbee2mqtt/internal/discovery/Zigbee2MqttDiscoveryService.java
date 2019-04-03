@@ -92,9 +92,9 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
             return;
         }
 
-        bridgeHandler.subscribe(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/log", this);
+        bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicBridgeLog(), this);
 
-        bridgeHandler.publish(bridgeHandler.getMqttbrokerBaseTopic() + "/bridge/config/devices", "ds");
+        bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicBridgeConfigDevices(), "get");
 
     }
 

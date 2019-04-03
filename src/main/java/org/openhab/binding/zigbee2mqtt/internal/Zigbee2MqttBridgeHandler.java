@@ -34,6 +34,7 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttDiscoveryService;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
+import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttTopicHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,6 @@ import com.google.gson.JsonObject;
 public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
         implements Zigbee2MqttMessageSubscriber, MqttConnectionObserver {
 
-    private static final byte[] HEARTBEAT = "heartbeat".getBytes();
-
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttBridgeHandler.class);
 
     private MqttBrokerConnection mqttBrokerConnection;
@@ -59,6 +58,9 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
     @NonNull
     private Zigbee2MqttBridgeConfiguration config = new Zigbee2MqttBridgeConfiguration();
+
+    @NonNull
+    private Zigbee2MqttTopicHandler topicHandler = new Zigbee2MqttTopicHandler();
 
     public Zigbee2MqttBridgeHandler(Bridge thing) {
         super(thing);
@@ -70,6 +72,8 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
         try {
 
             config = getConfigAs(Zigbee2MqttBridgeConfiguration.class);
+
+            topicHandler.setBaseTopic(config.getMqttbrokerBaseTopic());
 
             mqttBrokerConnection = createBrokerConnection(config);
             mqttBrokerConnection.addConnectionObserver(this);
@@ -95,9 +99,10 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     public void dispose() {
 
         try {
-            mqttBrokerConnection.stop().get().booleanValue();
 
+            mqttBrokerConnection.stop().get().booleanValue();
             super.dispose();
+
         } catch (InterruptedException | ExecutionException e) {
             logger.error(e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE);
@@ -157,18 +162,25 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         if (command instanceof RefreshType) {
-            return;
+            switch (channelUID.getId()) {
+                case CHANNEL_NAME_NETWORKMAP:
+                    publish(topicHandler.getTopicBridgeNetworkmap(), "graphviz");
+                    break;
+
+                default:
+                    return;
+            }
         }
 
         switch (channelUID.getId()) {
             case CHANNEL_NAME_PERMITJOIN:
                 String permitjoin = OnOffType.ON.toString().equals(command.toString()) ? "true" : "false";
-                publish(getMqttbrokerBaseTopic() + "/bridge/config/permit_join", permitjoin);
+                publish(topicHandler.getTopicBridgePermitjoin(), permitjoin);
                 break;
 
             case CHANNEL_NAME_LOGLEVEL:
                 String loglevel = command.toString();
-                publish(getMqttbrokerBaseTopic() + "/bridge/config/log_level", loglevel);
+                publish(topicHandler.getTopicBridgeLoglevel(), loglevel);
                 break;
 
             default:
@@ -181,7 +193,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        String action = topic.replaceFirst(config.getMqttbrokerBaseTopic() + "/bridge/", "");
+        String action = topicHandler.getActionFromTopic(topic);
 
         switch (action) {
             case "state":
@@ -236,9 +248,9 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     /**
      * @return
      */
-    public String getMqttbrokerBaseTopic() {
+    public @NonNull Zigbee2MqttTopicHandler getTopicHandler() {
 
-        return config.getMqttbrokerBaseTopic();
+        return topicHandler;
     }
 
     @Override
@@ -255,7 +267,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                 break;
             case "CONNECTED":
                 updateStatus(ThingStatus.UNKNOWN);
-                subscribe(getMqttbrokerBaseTopic() + "/bridge/#", this);
+                subscribeTopics();
                 break;
 
             default:
@@ -264,12 +276,18 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Add a new message consumer to this connection. Multiple subscribers with the same
-     * topic are allowed. This method will not protect you from adding a subscriber object
-     * multiple times!
-     *
-     * If there is a retained message for the topic, you are guaranteed to receive a callback
-     * for each new subscriber, even for the same topic.
+     * Add new message consumers all topics.
+     */
+    private void subscribeTopics() {
+
+        subscribe(topicHandler.getTopicBridgeState(), this);
+        subscribe(topicHandler.getTopicBridgeConfig(), this);
+        subscribe(topicHandler.getTopicBridgeLog(), this);
+
+    }
+
+    /**
+     * Add a new message consumer.
      *
      * @param topic      The topic to subscribe to.
      * @param subscriber The callback listener for received messages for the given topic.
@@ -294,8 +312,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Remove a previously registered consumer from this connection.
-     * If no more consumers are registered for a topic, the topic will be unsubscribed from.
+     * Remove a previously registered.
      *
      * @param topic      The topic to unsubscribe from.
      * @param subscriber The callback listener to remove.
