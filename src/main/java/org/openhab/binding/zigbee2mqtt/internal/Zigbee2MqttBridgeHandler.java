@@ -303,8 +303,8 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                     break;
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            logger.error("error while rendering networkmap: {}", e.getMessage());
         }
     }
 
