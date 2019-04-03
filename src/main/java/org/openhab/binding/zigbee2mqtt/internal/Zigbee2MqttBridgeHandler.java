@@ -258,9 +258,19 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
                         case "device_connected":
                             logger.info("log message - type={}, message={}", type, message);
-                            if (discoveryService != null) {
+
+                            Thing newDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, getThing().getUID(),
+                                    message.replaceAll("\r\n", "")));
+                            if (newDevice != null) {
+                                Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) newDevice.getHandler();
+                                if (handler != null) {
+                                    handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                            "device paired again to controller");
+                                }
+                            } else if (discoveryService != null) {
                                 discoveryService.discover();
                             }
+
                             break;
 
                         case "zigbee_publish_error":
@@ -270,7 +280,8 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                         case "device_removed":
                         case "device_banned":
                             logger.warn("log message - type={}, message={}", type, message);
-                            Thing removedDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, message));
+                            Thing removedDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, getThing().getUID(),
+                                    message.replaceAll("\r\n", "")));
                             if (removedDevice != null) {
                                 Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) removedDevice
                                         .getHandler();
