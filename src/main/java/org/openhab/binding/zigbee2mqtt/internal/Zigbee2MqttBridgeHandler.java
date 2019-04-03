@@ -25,8 +25,10 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -143,8 +145,9 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
         super.updateStatus(status);
 
         if (ThingStatus.ONLINE.equals(status)) {
-
-            discoveryService.discover();
+            if (discoveryService != null) {
+                discoveryService.discover();
+            }
         }
     }
 
@@ -218,28 +221,36 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                 break;
             case "log":
                 String type = jsonMessage.get("type").getAsString();
+                String message = jsonMessage.get("message").getAsString();
 
                 switch (type) {
-                    case "pairing":
-                        // TODO
-                        logger.info(jsonMessage.toString());
-                        break;
-                    case "device_connected":
-                        logger.info(jsonMessage.toString());
-                        discoveryService.discover();
-                        break;
-                    case "zigbee_publish_error":
 
+                    case "device_connected":
+                        logger.info("log message - type={}, message={}", type, message);
+                        if (discoveryService != null) {
+                            discoveryService.discover();
+                        }
+                        break;
+
+                    case "zigbee_publish_error":
                         logger.error(jsonMessage.toString());
                         break;
 
                     case "device_removed":
                     case "device_banned":
-                        // TODO find device and update status to OFFLINE
+                        logger.warn("log message - type={}, message={}", type, message);
+                        Thing removedDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, message));
+                        if (removedDevice != null) {
+                            Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) removedDevice.getHandler();
+                            if (handler != null) {
+                                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                                        "device removed from controller");
+                            }
+                        }
                         break;
 
                     default:
-                        logger.warn(jsonMessage.toString());
+                        logger.info("log message - type={}, message={}", type, message);
                         break;
                 }
 
