@@ -27,8 +27,14 @@ public interface Zigbee2MqttMessageSubscriber extends MqttMessageSubscriber {
         logger.debug("incoming message for topic: {} -> {}", topic, message);
 
         JsonParser parser = new JsonParser();
-        JsonElement msgJsonElement = parser.parse(message);
+        JsonElement msgJsonElement = null;
         JsonObject msgJsonObject = null;
+
+        try {
+            msgJsonElement = parser.parse(message);
+        } catch (Exception e) {
+            msgJsonElement = stringToJsonElement(message);
+        }
 
         if (!msgJsonElement.isJsonObject()) {
             msgJsonObject = new JsonObject();
@@ -45,9 +51,25 @@ public interface Zigbee2MqttMessageSubscriber extends MqttMessageSubscriber {
     }
 
     /**
+     * Replaces all special characters and creates a JsonPrimitiv with the formatted jsonString.
+     *
+     *
+     * @param jsonString
+     * @return
+     */
+    default JsonElement stringToJsonElement(@NonNull String jsonString) {
+        JsonParser parser = new JsonParser();
+        String formatted = jsonString;
+        formatted = formatted.replaceAll("\"", "\\\\\"");
+        formatted = formatted.replaceAll("\r\n", " ");
+        formatted = formatted.replaceAll("\t", " ");
+        formatted = "\"" + formatted + "\"";
+        return parser.parse(formatted);
+    }
+
+    /**
      * @param topic
      * @param jsonMessage
      */
     abstract void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage);
-
 }
