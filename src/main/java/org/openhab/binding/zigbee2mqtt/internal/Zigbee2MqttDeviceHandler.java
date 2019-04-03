@@ -127,18 +127,25 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        String commandvalue = command.toString();
+        if (command instanceof RefreshType) {
+            return;
+
+        }
 
         Zigbee2MqttBridgeHandler bridgeHandler = getZigbee2MqttBridgeHandler();
-
-        if (command instanceof RefreshType) {
+        if (bridgeHandler == null) {
+            logger.error("no bridgeHandler");
             return;
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.error("channel {} not found for thing {}", channelUID.getId(), getThing().getUID());
+            return;
+        }
 
+        String commandvalue = command.toString();
         if (channel.getConfiguration().get("command_topic") != null) {
-
             logger.debug("channel has no command topic!");
             return;
         }
@@ -184,7 +191,10 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                     commandMsg = createSetMessage(CHANNEL_NAME_BRIGHTNESS + "_percent", String.valueOf(commandvalue));
                 }
 
-                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, commandMsg.getBytes());
+                if (commandMsg != null) {
+                    bridgeHandler.getMqttBrokerConnection().publish(commandTopic, commandMsg.getBytes());
+                }
+
                 break;
 
             // TODO implement command channel: cover, lock
