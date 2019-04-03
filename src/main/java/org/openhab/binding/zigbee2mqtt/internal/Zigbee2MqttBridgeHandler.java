@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -81,12 +82,12 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
             if (!mqttBrokerConnection.start().get().booleanValue()) {
 
                 logger.error("Cannot connect to broker: {}", config.toString());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect to broker");
             }
 
         } catch (InterruptedException | ExecutionException e) {
             logger.error(e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
     }
@@ -232,6 +233,11 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                         logger.error(jsonMessage.toString());
                         break;
 
+                    case "device_removed":
+                    case "device_banned":
+                        // TODO find device and update status to OFFLINE
+                        break;
+
                     default:
                         logger.warn(jsonMessage.toString());
                         break;
@@ -260,13 +266,13 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
         switch (state.toString()) {
             case "DISCONNECTED":
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "disconnected from broker");
                 break;
             case "CONNECTION":
-                updateStatus(ThingStatus.UNKNOWN);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "connecting to broker");
                 break;
             case "CONNECTED":
-                updateStatus(ThingStatus.UNKNOWN);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "connected to broker");
                 subscribeTopics();
                 break;
 
