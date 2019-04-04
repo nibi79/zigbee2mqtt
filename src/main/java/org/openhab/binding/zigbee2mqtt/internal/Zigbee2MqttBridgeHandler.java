@@ -214,19 +214,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
             switch (action) {
                 case "networkmap/graphviz":
-                    MutableGraph g = Parser.read(jsonMessage.get("message").getAsString());
-                    BufferedImage bi = Graphviz.fromGraph(g).render(Format.PNG).toImage();
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bi, "png", baos);
-                    baos.flush();
-                    byte[] imageInByte = baos.toByteArray();
-                    baos.close();
-
-                    Channel channelImage = getThing().getChannel(CHANNEL_NAME_NETWORKMAP);
-                    if (channelImage != null) {
-                        updateState(channelImage.getUID(), new RawType(imageInByte, "image/png"));
-                    }
+                    handleActionNetworkmap(jsonMessage.get("message").getAsString());
                     break;
 
                 case "state":
@@ -254,48 +242,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                     String type = jsonMessage.get("type").getAsString();
                     String message = jsonMessage.get("message").getAsString();
 
-                    switch (type) {
-
-                        case "device_connected":
-                            logger.info("log message - type={}, message={}", type, message);
-
-                            Thing newDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, getThing().getUID(),
-                                    message.replaceAll("\r\n", "")));
-                            if (newDevice != null) {
-                                Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) newDevice.getHandler();
-                                if (handler != null) {
-                                    handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                            "device paired again to controller");
-                                }
-                            } else if (discoveryService != null) {
-                                discoveryService.discover();
-                            }
-
-                            break;
-
-                        case "zigbee_publish_error":
-                            logger.error(jsonMessage.toString());
-                            break;
-
-                        case "device_removed":
-                        case "device_banned":
-                            logger.warn("log message - type={}, message={}", type, message);
-                            Thing removedDevice = getThingByUID(new ThingUID(THING_TYPE_DEVICE, getThing().getUID(),
-                                    message.replaceAll("\r\n", "")));
-                            if (removedDevice != null) {
-                                Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) removedDevice
-                                        .getHandler();
-                                if (handler != null) {
-                                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                            "device removed from controller");
-                                }
-                            }
-                            break;
-
-                        default:
-                            logger.info("log message - type={}, message={}", type, message);
-                            break;
-                    }
+                    handleActionLog(type, message);
 
                     break;
 
@@ -385,6 +332,74 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     public CompletableFuture<Boolean> unsubscribe(String topic, Zigbee2MqttMessageSubscriber subsriber) {
         logger.debug("unsubsribe from topic -> {}", topic);
         return mqttBrokerConnection.unsubscribe(topic, subsriber);
+    }
+
+    /**
+     * @param message
+     * @throws IOException
+     */
+    private void handleActionNetworkmap(String message) throws IOException {
+        MutableGraph g = Parser.read(message);
+        BufferedImage bi = Graphviz.fromGraph(g).render(Format.PNG).toImage();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "png", baos);
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+
+        Channel channelImage = getThing().getChannel(CHANNEL_NAME_NETWORKMAP);
+        if (channelImage != null) {
+            updateState(channelImage.getUID(), new RawType(imageInByte, "image/png"));
+        }
+    }
+
+    /**
+     * @param type
+     * @param message
+     */
+    private void handleActionLog(String type, String message) {
+        switch (type) {
+
+            case "device_connected":
+                logger.info("log message - type={}, message={}", type, message);
+
+                Thing newDevice = getThingByUID(
+                        new ThingUID(THING_TYPE_DEVICE, getThing().getUID(), message.replaceAll("\r\n", "")));
+                if (newDevice != null) {
+                    Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) newDevice.getHandler();
+                    if (handler != null) {
+                        handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                "device paired again to controller");
+                    }
+                } else if (discoveryService != null) {
+                    discoveryService.discover();
+                }
+
+                break;
+
+            case "zigbee_publish_error":
+                logger.error("log message - type={}, message={}", type, message);
+                break;
+
+            case "device_removed":
+            case "device_banned":
+                logger.warn("log message - type={}, message={}", type, message);
+                Thing removedDevice = getThingByUID(
+                        new ThingUID(THING_TYPE_DEVICE, getThing().getUID(), message.replaceAll("\r\n", "")));
+                if (removedDevice != null) {
+                    Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) removedDevice.getHandler();
+                    if (handler != null) {
+                        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                                "device removed from controller");
+                    }
+                }
+                break;
+
+            default:
+                logger.info("log message - type={}, message={}", type, message);
+                break;
+        }
     }
 
 }
