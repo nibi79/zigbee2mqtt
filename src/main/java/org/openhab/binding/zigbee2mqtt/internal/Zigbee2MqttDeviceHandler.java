@@ -106,6 +106,9 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
             updateStatus(ThingStatus.ONLINE);
 
+            // read values from device (only supported by devices with 'command_topic')
+            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
+
         } else {
 
             updateStatus(ThingStatus.OFFLINE);
