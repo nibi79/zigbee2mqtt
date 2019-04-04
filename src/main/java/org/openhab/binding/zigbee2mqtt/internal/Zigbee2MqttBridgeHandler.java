@@ -209,52 +209,46 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        try {
+        String action = topicHandler.getActionFromTopic(topic);
 
-            String action = topicHandler.getActionFromTopic(topic);
+        switch (action) {
+            case "networkmap/graphviz":
+                handleActionNetworkmap(jsonMessage.get("message").getAsString());
+                break;
 
-            switch (action) {
-                case "networkmap/graphviz":
-                    handleActionNetworkmap(jsonMessage.get("message").getAsString());
-                    break;
+            case "state":
+                ThingStatus status = ThingStatus.valueOf(jsonMessage.get("message").getAsString().toUpperCase());
+                updateStatus(status);
+                break;
 
-                case "state":
-                    ThingStatus status = ThingStatus.valueOf(jsonMessage.get("message").getAsString().toUpperCase());
-                    updateStatus(status);
-                    break;
+            case "config":
+                String logLevel = jsonMessage.get("log_level").getAsString();
+                Channel channelLogLevel = getThing().getChannel(CHANNEL_NAME_LOGLEVEL);
+                if (channelLogLevel != null) {
+                    updateState(channelLogLevel.getUID(), StringType.valueOf(logLevel));
+                }
 
-                case "config":
-                    String logLevel = jsonMessage.get("log_level").getAsString();
-                    Channel channelLogLevel = getThing().getChannel(CHANNEL_NAME_LOGLEVEL);
-                    if (channelLogLevel != null) {
-                        updateState(channelLogLevel.getUID(), StringType.valueOf(logLevel));
-                    }
+                String permitJoin = jsonMessage.get("permit_join").getAsString();
+                Channel channelPermitJoin = getThing().getChannel(CHANNEL_NAME_PERMITJOIN);
+                if (channelPermitJoin != null) {
+                    updateState(channelPermitJoin.getUID(),
+                            Boolean.parseBoolean(permitJoin) ? OnOffType.ON : OnOffType.OFF);
+                }
 
-                    String permitJoin = jsonMessage.get("permit_join").getAsString();
-                    Channel channelPermitJoin = getThing().getChannel(CHANNEL_NAME_PERMITJOIN);
-                    if (channelPermitJoin != null) {
-                        updateState(channelPermitJoin.getUID(),
-                                Boolean.parseBoolean(permitJoin) ? OnOffType.ON : OnOffType.OFF);
-                    }
+                break;
 
-                    break;
+            case "log":
+                String type = jsonMessage.get("type").getAsString();
+                JsonElement message = jsonMessage.get("message");
+                if (message.isJsonPrimitive()) {
 
-                case "log":
-                    String type = jsonMessage.get("type").getAsString();
-                    JsonElement message = jsonMessage.get("message");
-                    if (message.isJsonPrimitive()) {
+                    handleActionLog(type, message.getAsString());
+                }
 
-                        handleActionLog(type, message.getAsString());
-                    }
+                break;
 
-                    break;
-
-                default:
-                    break;
-            }
-        } catch (IOException e) {
-
-            logger.error("error while rendering networkmap: {}", e.getMessage());
+            default:
+                break;
         }
     }
 
@@ -338,26 +332,42 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
     }
 
     /**
+     * Creates an image from networkmap message.
+     *
      * @param message
      * @throws IOException
      */
-    private void handleActionNetworkmap(String message) throws IOException {
-        MutableGraph g = Parser.read(message);
-        BufferedImage bi = Graphviz.fromGraph(g).render(Format.PNG).toImage();
+    private void handleActionNetworkmap(String message) {
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi, "png", baos);
-        baos.flush();
-        byte[] imageInByte = baos.toByteArray();
-        baos.close();
+        try {
 
-        Channel channelImage = getThing().getChannel(CHANNEL_NAME_NETWORKMAP);
-        if (channelImage != null) {
-            updateState(channelImage.getUID(), new RawType(imageInByte, "image/png"));
+            MutableGraph g = Parser.read(message);
+            BufferedImage bi = Graphviz.fromGraph(g).render(Format.PNG).toImage();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bi, "png", baos);
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+
+            Channel channelImage = getThing().getChannel(CHANNEL_NAME_NETWORKMAP);
+            if (channelImage != null) {
+                updateState(channelImage.getUID(), new RawType(imageInByte, "image/png"));
+            }
+
+        } catch (IOException e) {
+
+            logger.error("error while rendering networkmap: {}", e.getMessage());
         }
     }
 
     /**
+     * Handles the log message:
+     * - device_connected
+     * - zigbee_publish_error
+     * - device_removed
+     * - device_banned
+     *
      * @param type
      * @param message
      */
@@ -366,19 +376,11 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
             case "device_connected":
                 logger.info("log message - type={}, message={}", type, message);
-
-                Thing newDevice = getThingByUID(
-                        new ThingUID(THING_TYPE_DEVICE, getThing().getUID(), message.replaceAll("\r\n", "")));
-                if (newDevice != null) {
-                    Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) newDevice.getHandler();
-                    if (handler != null) {
-                        handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                "device paired again to controller");
-                    }
-                } else if (discoveryService != null) {
+                updateDeviceStatus(message.replaceAll("\r\n", ""), ThingStatus.ONLINE,
+                        "device paired again to controller");
+                if (discoveryService != null) {
                     discoveryService.discover();
                 }
-
                 break;
 
             case "zigbee_publish_error":
@@ -388,20 +390,31 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
             case "device_removed":
             case "device_banned":
                 logger.warn("log message - type={}, message={}", type, message);
-                Thing removedDevice = getThingByUID(
-                        new ThingUID(THING_TYPE_DEVICE, getThing().getUID(), message.replaceAll("\r\n", "")));
-                if (removedDevice != null) {
-                    Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) removedDevice.getHandler();
-                    if (handler != null) {
-                        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "device removed from controller");
-                    }
-                }
+                updateDeviceStatus(message.replaceAll("\r\n", ""), ThingStatus.OFFLINE,
+                        "device removed from controller");
                 break;
 
             default:
                 logger.info("log message - type={}, message={}", type, message);
                 break;
+        }
+    }
+
+    /**
+     * Search the thing by given ieeeAddr and updates the status.
+     *
+     * @param ieeeAddr
+     * @param thingStatus
+     * @param description
+     */
+    private void updateDeviceStatus(String ieeeAddr, ThingStatus thingStatus, String description) {
+
+        Thing thing = getThingByUID(new ThingUID(THING_TYPE_DEVICE, getThing().getUID(), ieeeAddr));
+        if (thing != null) {
+            Zigbee2MqttDeviceHandler handler = (Zigbee2MqttDeviceHandler) thing.getHandler();
+            if (handler != null) {
+                handler.updateStatus(thingStatus, ThingStatusDetail.NONE, description);
+            }
         }
     }
 
