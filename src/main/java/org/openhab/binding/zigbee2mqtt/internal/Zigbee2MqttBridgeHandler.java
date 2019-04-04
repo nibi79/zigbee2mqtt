@@ -47,6 +47,7 @@ import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttTopicHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import guru.nidi.graphviz.engine.Format;
@@ -240,9 +241,11 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
                 case "log":
                     String type = jsonMessage.get("type").getAsString();
-                    String message = jsonMessage.get("message").getAsString();
+                    JsonElement message = jsonMessage.get("message");
+                    if (message.isJsonPrimitive()) {
 
-                    handleActionLog(type, message);
+                        handleActionLog(type, message.getAsString());
+                    }
 
                     break;
 
