@@ -159,17 +159,17 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
             case CHANNEL_NAME_STATE:
                 String sMsg = createSetMessage(CHANNEL_NAME_STATE, String.valueOf(commandvalue));
-                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, sMsg.getBytes());
+                bridgeHandler.publish(commandTopic, sMsg);
                 break;
 
             case CHANNEL_NAME_BRIGHTNESS:
                 String bMsg = createSetMessage(CHANNEL_NAME_BRIGHTNESS + "_percent", String.valueOf(commandvalue));
-                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, bMsg.getBytes());
+                bridgeHandler.publish(commandTopic, bMsg);
                 break;
 
             case CHANNEL_NAME_COLORTEMP:
                 String cMsg = createSetMessage(CHANNEL_NAME_COLORTEMP + "_percent", String.valueOf(commandvalue));
-                bridgeHandler.getMqttBrokerConnection().publish(commandTopic, cMsg.getBytes());
+                bridgeHandler.publish(commandTopic, cMsg);
                 break;
 
             case CHANNEL_NAME_COLOR:
@@ -193,7 +193,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                 }
 
                 if (commandMsg != null) {
-                    bridgeHandler.getMqttBrokerConnection().publish(commandTopic, commandMsg.getBytes());
+                    bridgeHandler.publish(commandTopic, commandMsg);
                 }
 
                 break;

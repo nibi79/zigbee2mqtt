@@ -163,13 +163,6 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    /**
-     * @return
-     */
-    public MqttBrokerConnection getMqttBrokerConnection() {
-        return mqttBrokerConnection;
-    }
-
     public void setDiscovery(Zigbee2MqttDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
     }
