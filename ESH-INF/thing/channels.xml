@@ -46,35 +46,6 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="click">
-		<kind>trigger</kind>
-		<label>Click Event</label>
-		<description>Fires when the button is pressed, double, triple, quad pressed</description>
-		<event>
-			<options>
-				<option value="PRESSED_SINGLE">single</option>
-				<option value="PRESSED_DOUBLE">double</option>
-				<option value="PRESSED_TRIPLE">triple</option>
-				<option value="PRESSED_QUADRUPLE">quadruple</option>
-			</options>
-		</event>
-	</channel-type>
-
-	<channel-type id="action">
-		<kind>trigger</kind>
-		<label>Click Event</label>
-		<description>Fires when the cube is rotate, flip,fall</description>
-		<event>
-			<options>
-				<option value="ACTION_FALL">fall</option>
-				<option value="ACTIONFLIP90">flip90</option>
-				<option value="ACTION_FLIP180">flip180</option>
-				<option value="ACTIO_ROTATE_RIGHT">rotate_right</option>
-				<option value="ACTIO_ROTATE_LEFT">rotate_left</option>
-			</options>
-		</event>
-	</channel-type>
-
 	<channel-type id="water_leak">
 		<item-type>Switch</item-type>
 		<label>Flood</label>
@@ -119,20 +90,20 @@
 		<state/>
 	</channel-type>
 
-	<channel-type id="click">
-		<item-type>String</item-type>
-		<label>Click event</label>
-		<category>click</category>
-		<state/>
-	</channel-type>
+    <channel-type id="click">
+        <kind>trigger</kind>
+        <label>Click Event</label>
+        <description>Fires on click event</description>
+        <state readOnly="true"/>
+    </channel-type>
 
-	<channel-type id="action">
-		<item-type>String</item-type>
-		<label>Action event</label>
-		<category>action</category>
-		<state/>
-	</channel-type>
-
+    <channel-type id="action">
+        <kind>trigger</kind>
+        <label>Action Event</label>
+        <description>Fires on action event</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>State</label>
