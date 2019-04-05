@@ -89,6 +89,16 @@
 		<category>color_temp</category>
 		<state/>
 	</channel-type>
+	
+    <!-- Color Channel -->
+    <channel-type id="color">
+        <item-type>Color</item-type>
+        <label>Color</label>
+        <description>The color channel allows to control the color of a light.
+            It is also possible to dim values and switch the light on and off.
+        </description>
+        <category>ColorLight</category>
+    </channel-type>	
 
     <channel-type id="click">
         <kind>trigger</kind>
