@@ -46,12 +46,14 @@ If new devices joined to the network ([documentation](http://www.zigbee2mqtt.io/
 
 Following options can be set for the **Zigbee2Mqtt Server**:
 
-- IP-Address or hostname of the MQTT-Broker
-- Port of the MQTT-Broker
-- Client ID for MQTT-Broker.
-- Username to access the MQTT-Broker
-- Password to access the MQTT-Broker.
-- Base topic which is used by Zigbee2Mqtt.
+| Property   | Description |
+|-----------|-----------|
+| mqttbrokerIpAddress | IP-Address  or hostname of the MQTT-Broker|
+| mqttbrokerPort | Port of the MQTT-Broker |
+| mqttbrokerClientID | Client ID for MQTT-Broker. |
+| mqttbrokerUsername | Username to access the MQTT-Broker |
+| mqttbrokerPassword | Password to access the MQTT-Broker. |
+| mqttbrokerBaseTopic | Base topic which is used by Zigbee2Mqtt. |
 
 ## Channels
 
