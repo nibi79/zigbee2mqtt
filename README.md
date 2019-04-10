@@ -11,7 +11,8 @@ This binding connects openHAB with your Zigbee2Mqtt server using MQTT.
 4. [Discovery](https://github.com/nibi79/zigbee2mqtt/tree/master#discovery)
 5. [Configuration](https://github.com/nibi79/zigbee2mqtt/tree/master#configuration)
 6. [Channels](https://github.com/nibi79/zigbee2mqtt/tree/master#channels)
-7. [Support](https://github.com/nibi79/zigbee2mqtt/tree/master#support)
+7. [File based configuration](https://github.com/nibi79/zigbee2mqtt/tree/master#file-based-configuration)
+8. [Support](https://github.com/nibi79/zigbee2mqtt/tree/master#support)
 
 ***
 
