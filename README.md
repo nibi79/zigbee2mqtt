@@ -39,7 +39,9 @@ Currently following Things are supported:
 
 ## Discovery
 
-After configuring the **Zigbee2Mqtt Server**, automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration.
+After configuring the **Zigbee2Mqtt Server**, automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration. 
+
+If new devices joined to the network ([documentation](http://www.zigbee2mqtt.io/getting_started/pairing_devices.html)) they will automatically appear in the INBOX.
 
 ## Binding Configuration
 
@@ -56,12 +58,31 @@ Following options can be set for the **Zigbee2Mqtt Server**:
 
 Currently following **Channels** are supported on the **Zigbee2Mqtt Server**:
 
-- permitJoin
-- logLevel
+| Channel   | Type | Values |
+|-----------|-----------|-----------|
+| permitJoin| `Switch` | ON/OFF |
+| logLevel  | `String` | DEBUG, INFO, WARN, ERROR |
+| networkMap| `Image` |  |
 
 Currently following **Channels** are supported on the **Zigbee2Mqtt Device**:
 
-_TODO_
+| Channel   | Type | Values |
+|------------|-----------|-----------|
+| state      | `Switch` | ON/OFF |
+| temperature| `Number` | |
+| illuminance| `Number` | |
+| occupancy  | `Switch` | ON/OFF |
+| humidity   | `Number` | |
+| pressure   | `Number` | |
+| contact    | `Contact` | OPEN/CLOSE |
+| water_leak | `Switch` | ON/OFF |
+| battery    | `Number` | |
+| linkquality| `Number` | |
+| brightness | `Number` | |
+| color_temp | `Number` | |
+| color      | `Color`  | |
+| click      | `String` | depends on device e.g.: single, double, triple, quadruple ... |
+| action     | `String` | depends on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
 
 ## Support
 
