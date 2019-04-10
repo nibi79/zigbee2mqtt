@@ -56,7 +56,7 @@ Following options can be set for the **Zigbee2Mqtt Server**:
 
 ## Channels
 
-Currently following **Channels** are supported on the **Zigbee2Mqtt Server**:
+### Currently following **Channels** are supported on the **Zigbee2Mqtt Server**:
 
 | Channel   | Type | Values |
 |-----------|-----------|-----------|
@@ -64,7 +64,13 @@ Currently following **Channels** are supported on the **Zigbee2Mqtt Server**:
 | logLevel  | `String` | DEBUG, INFO, WARN, ERROR |
 | networkMap| `Image` |  |
 
-Currently following **Channels** are supported on the **Zigbee2Mqtt Device**:
+Example NetworkMap: 
+
+![alt text](images/networkmap.png)
+
+
+
+### Currently following **Channels** are supported on the **Zigbee2Mqtt Device**:
 
 | Channel   | Type | Values |
 |------------|-----------|-----------|
