@@ -4,14 +4,14 @@ This binding connects openHAB with your Zigbee2Mqtt server using MQTT.
 
 # Table of contents
 
-1. [Disclaimer](https://github.com/nibi79/zigbe2mqtt/tree/master#disclaimer)
-2. [Prerequisites](https://github.com/nibi79/zigbe2mqtt/tree/master#installation-and-upgrade)
-3. [Installation and upgrade](https://github.com/nibi79/zigbe2mqtt/tree/master#installation-and-upgrade)
-3. [Supported Things](https://github.com/nibi79/zigbe2mqtt/tree/master#supported-things)
-4. [Discovery](https://github.com/nibi79/zigbe2mqtt/tree/master#discovery)
-5. [Configuration](https://github.com/nibi79/zigbe2mqtt/tree/master#configuration)
-6. [Channels](https://github.com/nibi79/zigbe2mqtt/tree/master#channels)
-7. [Support](https://github.com/nibi79/zigbe2mqtt/tree/master#support)
+1. [Disclaimer](https://github.com/nibi79/zigbee2mqtt/tree/master#disclaimer)
+2. [Prerequisites](https://github.com/nibi79/zigbee2mqtt/tree/master#installation-and-upgrade)
+3. [Installation and upgrade](https://github.com/nibi79/zigbee2mqtt/tree/master#installation-and-upgrade)
+3. [Supported Things](https://github.com/nibi79/zigbee2mqtt/tree/master#supported-things)
+4. [Discovery](https://github.com/nibi79/zigbee2mqtt/tree/master#discovery)
+5. [Configuration](https://github.com/nibi79/zigbee2mqtt/tree/master#configuration)
+6. [Channels](https://github.com/nibi79/zigbee2mqtt/tree/master#channels)
+7. [Support](https://github.com/nibi79/zigbee2mqtt/tree/master#support)
 
 ***
 
