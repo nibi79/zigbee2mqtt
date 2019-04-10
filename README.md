@@ -88,8 +88,45 @@ Example NetworkMap:
 | brightness | `Number` | |
 | color_temp | `Number` | |
 | color      | `Color`  | |
-| click      | `String` | depends on device e.g.: single, double, triple, quadruple ... |
-| action     | `String` | depends on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
+| click      | `String` | This is a trigger channel and cannot be link to an item. The values depends on device e.g.: single, double, triple, quadruple ... |
+| action     | `String` | This is a trigger channel and cannot be link to an item. The values depends on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
+
+## File based configuration
+### .rules
+```
+ rule "Zigbee2Mqtt Cube SLIDE"
+ when
+   Channel "zigbee2mqtt:zigbee2mqttDevice:86a2833a:0x00158d00d38:action" triggered "slide"
+ then
+   logInfo("cube", "slided" )
+
+ end
+```
+or
+```
+rule "Zigbee2Mqtt Cube action"
+when
+    Channel "zigbee2mqtt:zigbee2mqttDevice:86a2833a:0x00158d00d38:action" triggered
+then
+    switch(receivedEvent.getEvent()) {
+        case "slide": {
+             logInfo("cube", "cube slided" )
+        }
+       case "rotate_right": {
+             logInfo("cube", "cube rotate_right" )
+        }        
+       case "rotate_left": {
+             logInfo("cube", "cube rotate_left" )
+        }          
+       case "shake": {
+             logInfo("cube", "cube shake" )
+        }
+       case "fall": {
+             logInfo("cube", "cube fall" )
+        }          
+    }
+end
+```
 
 ## Support
 
