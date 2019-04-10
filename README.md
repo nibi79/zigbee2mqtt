@@ -14,7 +14,6 @@ This binding connects openHAB with your Zigbee2Mqtt server using MQTT.
 7. [Support](https://github.com/nibi79/zigbe2mqtt/tree/master#support)
 
 ***
-***
 
 ## Disclaimer
 
