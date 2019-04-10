@@ -89,8 +89,8 @@ Example NetworkMap:
 | brightness | `Number` | |
 | color_temp | `Number` | |
 | color      | `Color`  | |
-| click      | `String` | This is a trigger channel and cannot be link to an item. The values depends on device e.g.: single, double, triple, quadruple ... |
-| action     | `String` | This is a trigger channel and cannot be link to an item. The values depends on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
+| click      | `String` | This is a trigger channel and cannot be link to an item. The values depend on device e.g.: single, double, triple, quadruple ... |
+| action     | `String` | This is a trigger channel and cannot be link to an item. The values depend on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
 
 ## File based configuration
 ### .rules
@@ -142,7 +142,7 @@ In any case please provide some information about your problem:
 - openHAB and binding version 
 - error description and steps to retrace if applicable
 - any related `[WARN]`/`[ERROR]` from openhab.log
-- whether it's the binding, bridge, dvice or channel related issue
+- whether it's the binding, bridge, device or channel related issue
 
 For the sake of documentation please use English language. 
 
