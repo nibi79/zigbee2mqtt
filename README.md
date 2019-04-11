@@ -54,7 +54,8 @@ Following options can be set for the **Zigbee2Mqtt Server**:
 | mqttbrokerClientID | Client ID for MQTT-Broker. |
 | mqttbrokerUsername | Username to access the MQTT-Broker |
 | mqttbrokerPassword | Password to access the MQTT-Broker. |
-| mqttbrokerBaseTopic | Base topic which is used by Zigbee2Mqtt. |
+| z2mBaseTopic | Base topic for Zigbee2Mqtt MQTT messages: default = 'zigbee2mqtt'. Can be edit in data/configuration.yaml -> `base_topic` |
+| z2mDiscoveryTopic | Discovery topic which is used by Zigbee2Mqtt: default = 'homeassistant'. Can be edit in data/configuration.yaml -> `homeassistant_discovery_topic`|
 
 ## Channels
 
