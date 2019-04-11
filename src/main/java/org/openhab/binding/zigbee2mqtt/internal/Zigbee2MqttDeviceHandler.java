@@ -106,8 +106,14 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
             updateStatus(ThingStatus.ONLINE);
 
-            // read values from device (only supported by devices with 'command_topic')
-            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
+            try {
+                // workaround: channel 'color' needs time otherwise the channel color is not linked when message is
+                // processed and channel is uppdated
+                Thread.sleep(5000);
+                // read values from device (only supported by devices with 'command_topic')
+                bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
+            } catch (InterruptedException e) {
+            }
 
         } else {
 
@@ -289,6 +295,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
                         // type light
                         case CHANNEL_NAME_COLOR:
+
                             float x = channelValue.getAsJsonObject().get("x").getAsFloat();
                             float y = channelValue.getAsJsonObject().get("y").getAsFloat();
 
