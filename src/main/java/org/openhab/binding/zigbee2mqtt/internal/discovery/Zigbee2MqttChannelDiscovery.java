@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.ChannelDiscovery;
-import org.openhab.binding.zigbee2mqtt.internal.mqtt.TopicHomeassistant;
+import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +44,13 @@ public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery<ChannelDis
     }
 
     @Override
-    protected List<ChannelDiscovery> processResultSet(HashMap<TopicHomeassistant, JsonObject> discoveryResult) {
+    protected List<ChannelDiscovery> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult) {
 
         HashMap<String, ChannelDiscovery> channels = new HashMap<>();
 
-        for (Entry<TopicHomeassistant, JsonObject> entry : discoveryResult.entrySet()) {
+        for (Entry<DiscoveryTopic, JsonObject> entry : discoveryResult.entrySet()) {
 
-            TopicHomeassistant topic = entry.getKey();
+            DiscoveryTopic topic = entry.getKey();
 
             ChannelDiscovery channelDiscovery = new ChannelDiscovery(topic.getTopic(), topic.getIeeeAddr());
             channelDiscovery.setObjectId(topic.getObjectId());

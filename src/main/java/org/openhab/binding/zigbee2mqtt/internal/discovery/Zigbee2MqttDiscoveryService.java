@@ -92,27 +92,26 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
             return;
         }
 
-        bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicBridgeLog(), this);
+        bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicBridgeConfigDevices(), this);
 
-        bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicBridgeConfigDevices(), "get");
+        bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicBridgeConfigDevicesGet(), "get");
 
     }
 
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        String messageType = jsonMessage.get("type").getAsString();
+        JsonArray message = jsonMessage.get("message").getAsJsonArray();
 
-        if ("devices".equals(messageType)) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
-            JsonArray message = jsonMessage.get("message").getAsJsonArray();
+        for (JsonElement jsonElement : message) {
 
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            String ieeeAddr = jsonElement.getAsJsonObject().get("ieeeAddr").getAsString();
+            String type = jsonElement.getAsJsonObject().get("type").getAsString();
 
-            for (JsonElement jsonElement : message) {
+            if (!"Coordinator".equals(type)) {
 
-                String ieeeAddr = jsonElement.getAsJsonObject().get("ieeeAddr").getAsString();
-                String type = jsonElement.getAsJsonObject().get("type").getAsString();
                 String model = jsonElement.getAsJsonObject().get("model").getAsString().replace(".", "_");
                 String friendlyName = jsonElement.getAsJsonObject().get("friendly_name").getAsString();
 
@@ -132,9 +131,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
                         .withLabel(friendlyName + " (" + model + ")").build();
 
                 thingDiscovered(discoveryResult);
-
             }
-
         }
     }
 

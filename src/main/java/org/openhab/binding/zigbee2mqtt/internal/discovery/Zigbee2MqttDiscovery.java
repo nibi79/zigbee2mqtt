@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.DiscoveryResult;
-import org.openhab.binding.zigbee2mqtt.internal.mqtt.TopicHomeassistant;
+import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +35,11 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDiscovery.class);
 
-    protected static final String TOPIC_CHANNELDISCOVERY = TopicHomeassistant.TOPIC_HOMEASSISTANT;
-
     protected Zigbee2MqttBridgeHandler bridgeHandler = null;
 
     private String ieeeAddr = null;
 
-    private HashMap<TopicHomeassistant, JsonObject> discoveryResult = new HashMap<>();
+    private HashMap<DiscoveryTopic, JsonObject> discoveryResult = new HashMap<>();
 
     /**
      * @param bridgeHandler
@@ -77,7 +75,7 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
      * @param discoveryResult
      * @return
      */
-    protected abstract List<T> processResultSet(HashMap<TopicHomeassistant, JsonObject> discoveryResult);
+    protected abstract List<T> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult);
 
     /**
      * Subscribes to homeassistant topic to recieve configs .
@@ -95,12 +93,13 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
             return false;
         }
 
+        String discoveryTopic = bridgeHandler.getTopicHandler().getDiscoveryTopic() + "/#";
         try {
 
-            logger.debug("mqtt: subribe to topic '{}'", TOPIC_CHANNELDISCOVERY);
-            bridgeHandler.subscribe(TOPIC_CHANNELDISCOVERY, this);
+            logger.debug("mqtt: subribe to topic '{}'", discoveryTopic);
+            bridgeHandler.subscribe(discoveryTopic, this);
 
-            // pause until channels discovered form homeassistant topic
+            // pause until channels discovered form discovery topic
             Thread.sleep(2000);
 
             return true;
@@ -111,8 +110,8 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
             return false;
         } finally {
 
-            logger.debug("mqtt: unsubribe from topic '{}'", TOPIC_CHANNELDISCOVERY);
-            bridgeHandler.unsubscribe(TOPIC_CHANNELDISCOVERY, this);
+            logger.debug("mqtt: unsubribe from topic '{}'", discoveryTopic);
+            bridgeHandler.unsubscribe(discoveryTopic, this);
         }
 
     }
@@ -120,7 +119,7 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
     @Override
     public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        TopicHomeassistant topicHomeassistant = new TopicHomeassistant(topic);
+        DiscoveryTopic topicHomeassistant = new DiscoveryTopic(topic);
         if (ieeeAddr.equals(topicHomeassistant.getIeeeAddr())) {
 
             discoveryResult.put(topicHomeassistant, jsonMessage);

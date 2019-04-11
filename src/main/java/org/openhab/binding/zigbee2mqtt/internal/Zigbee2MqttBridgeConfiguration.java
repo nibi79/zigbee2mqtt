@@ -24,7 +24,8 @@ public class Zigbee2MqttBridgeConfiguration {
     private String mqttbrokerClientID;
     private String mqttbrokerUsername;
     private String mqttbrokerPassword;
-    private String mqttbrokerBaseTopic;
+    private String z2mBaseTopic;
+    private String z2mDiscoveryTopic;
 
     public String getMqttbrokerIpAddress() {
         return mqttbrokerIpAddress;
@@ -58,12 +59,12 @@ public class Zigbee2MqttBridgeConfiguration {
         this.mqttbrokerPassword = password;
     }
 
-    public String getMqttbrokerBaseTopic() {
-        return mqttbrokerBaseTopic;
+    public String getZ2mBaseTopic() {
+        return z2mBaseTopic;
     }
 
-    public void setMqttbrokerBaseTopic(String mqttbrokerBaseTopic) {
-        this.mqttbrokerBaseTopic = mqttbrokerBaseTopic;
+    public void setZ2mBaseTopic(String z2mBaseTopic) {
+        this.z2mBaseTopic = z2mBaseTopic;
     }
 
     public String getMqttbrokerClientID() {
@@ -72,6 +73,14 @@ public class Zigbee2MqttBridgeConfiguration {
 
     public void setMqttbrokerClientID(String mqttbrokerClientID) {
         this.mqttbrokerClientID = mqttbrokerClientID;
+    }
+
+    public String getZ2mDiscoveryTopic() {
+        return z2mDiscoveryTopic;
+    }
+
+    public void setZ2mDiscoveryTopic(String z2mDiscoveryTopic) {
+        this.z2mDiscoveryTopic = z2mDiscoveryTopic;
     }
 
     // @Override
@@ -86,8 +95,8 @@ public class Zigbee2MqttBridgeConfiguration {
     @Override
     public String toString() {
         return "Zigbee2MqttBridgeConfiguration [mqttbrokerIpAddress=" + mqttbrokerIpAddress + ", mqttbrokerPort="
-                + mqttbrokerPort + ", mqttbrokerBaseTopic=" + mqttbrokerBaseTopic + ", mqttbrokerUsername="
-                + mqttbrokerUsername + "]";
+                + mqttbrokerPort + ", mqttbrokerUsername=" + mqttbrokerUsername + ", z2mBaseTopic=" + z2mBaseTopic
+                + ", z2mDiscoveryTopic=" + z2mDiscoveryTopic + "]";
     }
 
 }

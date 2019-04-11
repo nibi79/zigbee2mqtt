@@ -3,22 +3,40 @@ package org.openhab.binding.zigbee2mqtt.internal.mqtt;
 public class Zigbee2MqttTopicHandler {
 
     private String baseTopic = null;
+    private String discoveryTopic = null;
 
     /**
      * Set baseTopic to default name 'zigbee2mqtt'.
+     * Set baseTopic to default name 'homeassistant'.
      *
      */
     public Zigbee2MqttTopicHandler() {
         super();
         this.baseTopic = "zigbee2mqtt";
+        this.discoveryTopic = "homeassistant";
     }
 
     /**
      * @param baseTopic
      */
-    public Zigbee2MqttTopicHandler(String baseTopic) {
+    public Zigbee2MqttTopicHandler(String baseTopic, String discoveryTopic) {
         super();
         this.baseTopic = baseTopic;
+        this.discoveryTopic = discoveryTopic;
+    }
+
+    /**
+     * @return the discoveryTopic
+     */
+    public String getDiscoveryTopic() {
+        return discoveryTopic;
+    }
+
+    /**
+     * @param discoverTopic the discoveryTopic to set
+     */
+    public void setDiscoveryTopic(String discoveryTopic) {
+        this.discoveryTopic = discoveryTopic;
     }
 
     /**
@@ -115,6 +133,14 @@ public class Zigbee2MqttTopicHandler {
     }
 
     /**
+     * @return {@literal <baseTopic>/bridge/config/devices/get}
+     */
+    public String getTopicBridgeConfigDevicesGet() {
+
+        return baseTopic.concat("/bridge/config/devices/get");
+    }
+
+    /**
      * @param ieeeAddr
      * @return {@literal <baseTopic>/<ieeeAddr>}
      */
@@ -140,4 +166,5 @@ public class Zigbee2MqttTopicHandler {
 
         return baseTopic.concat("/" + ieeeAddr + "/set");
     }
+
 }
