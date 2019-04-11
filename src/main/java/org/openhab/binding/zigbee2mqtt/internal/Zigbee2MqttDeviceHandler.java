@@ -106,14 +106,8 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
             updateStatus(ThingStatus.ONLINE);
 
-            try {
-                // workaround: channel 'color' needs time otherwise the channel color is not linked when message is
-                // processed and channel is uppdated
-                Thread.sleep(5000);
-                // read values from device (only supported by devices with 'command_topic')
-                bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
-            } catch (InterruptedException e) {
-            }
+            // initialize channels
+            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
 
         } else {
 
@@ -187,14 +181,13 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
                     HSBType hsb = (HSBType) command;
 
-                    // xy
-                    PercentType[] xy = hsb.toXY();
-                    float x = Float.valueOf(xy[0].floatValue() / 100.0f);
-                    float y = Float.valueOf(xy[1].floatValue() / 100.0f);
+                    int brightness = hsb.getBrightness().intValue();
+                    PercentType saturation = hsb.getSaturation();
+                    DecimalType hue = hsb.getHue();
 
-                    commandMsg = "{\"brightness_percent\": \"" + String.valueOf(hsb.getBrightness().toString()) + "\","
-                            + "\"color\": {" + "\"x\": " + String.valueOf(x) + "," + "\"y\": " + String.valueOf(y) + ""
-                            + "}}";
+                    commandMsg = String.format(
+                            "{\"brightness_percent\": %d, \"color\": {\"hue\": %d, \"saturation\": %d}}", brightness,
+                            hue.intValue(), saturation.longValue());
 
                 } else if (command instanceof PercentType) {
 
@@ -223,7 +216,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
      */
     private String createSetMessage(String key, String value) {
 
-        return "{\"" + key + "\": \"" + value + "\"}";
+        return String.format("{\"%s\": \"%s\"}", key, value);
     }
 
     @Override
@@ -295,17 +288,17 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
 
                         // type light
                         case CHANNEL_NAME_COLOR:
+                            DecimalType h = new DecimalType(
+                                    channelValue.getAsJsonObject().get("hue").getAsBigDecimal());
 
-                            float x = channelValue.getAsJsonObject().get("x").getAsFloat();
-                            float y = channelValue.getAsJsonObject().get("y").getAsFloat();
+                            BigDecimal saturation = channelValue.getAsJsonObject().get("saturation").getAsBigDecimal();
+                            PercentType s = new PercentType(saturation);
 
-                            HSBType hsb = HSBType.fromXY(x, y);
-                            updateState(channel.getUID(), hsb);
-
-                            // brightness was set to 100% by method 'fromXY'
                             String brightness = jsonMessage.get("brightness").getAsString();
-                            BigDecimal b = getPercentValue(BRIGHTNESS_MAX, brightness);
-                            updateState(channel.getUID(), new PercentType(b.round(new MathContext(2))));
+                            PercentType p = new PercentType(getPercentValue(BRIGHTNESS_MAX, brightness));
+
+                            HSBType hsb = new HSBType(h, s, p);
+                            updateState(channel.getUID(), hsb);
 
                             break;
 

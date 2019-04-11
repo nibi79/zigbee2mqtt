@@ -17,6 +17,9 @@ import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstan
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -88,7 +91,8 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
             config = getConfigAs(Zigbee2MqttBridgeConfiguration.class);
 
-            topicHandler.setBaseTopic(config.getMqttbrokerBaseTopic());
+            topicHandler.setBaseTopic(config.getZ2mBaseTopic());
+            topicHandler.setDiscoveryTopic(config.getZ2mDiscoveryTopic());
 
             mqttBrokerConnection = createBrokerConnection(config);
             mqttBrokerConnection.addConnectionObserver(this);
@@ -215,19 +219,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                 break;
 
             case "config":
-                String logLevel = jsonMessage.get("log_level").getAsString();
-                Channel channelLogLevel = getThing().getChannel(CHANNEL_NAME_LOGLEVEL);
-                if (channelLogLevel != null) {
-                    updateState(channelLogLevel.getUID(), StringType.valueOf(logLevel));
-                }
-
-                String permitJoin = jsonMessage.get("permit_join").getAsString();
-                Channel channelPermitJoin = getThing().getChannel(CHANNEL_NAME_PERMITJOIN);
-                if (channelPermitJoin != null) {
-                    updateState(channelPermitJoin.getUID(),
-                            Boolean.parseBoolean(permitJoin) ? OnOffType.ON : OnOffType.OFF);
-                }
-
+                handleConfigValues(jsonMessage);
                 break;
 
             case "log":
@@ -243,6 +235,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
             default:
                 break;
         }
+
     }
 
     /**
@@ -391,6 +384,49 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
                 logger.info("log message - type={}, message={}", type, message);
                 break;
         }
+    }
+
+    /**
+     * Handles the log message:
+     *  - log_level
+     *  - permit_join
+     *  - add all other jsonvalues to the bridge properties
+     *  
+     * @param jsonMessage
+     */
+    private void handleConfigValues(JsonObject jsonMessage) {
+
+        Map<@NonNull String, @NonNull String> props = new HashMap<String, String>();
+
+        for (Entry<String, JsonElement> entry : jsonMessage.entrySet()) {
+            String entryKey = entry.getKey();
+            JsonElement entryValue = entry.getValue();
+
+            logger.debug("Property received: key={}, value={}", entryKey, entryValue.getAsString());
+
+            switch (entryKey) {
+                case "log_level":
+                    Channel channelLogLevel = getThing().getChannel(CHANNEL_NAME_LOGLEVEL);
+                    if (channelLogLevel != null) {
+                        updateState(channelLogLevel.getUID(), StringType.valueOf(entryValue.getAsString()));
+                    }
+                    break;
+
+                case "permit_join":
+                    Channel channelPermitJoin = getThing().getChannel(CHANNEL_NAME_PERMITJOIN);
+                    if (channelPermitJoin != null) {
+                        updateState(channelPermitJoin.getUID(),
+                                entryValue.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
+                    }
+                    break;
+
+                default:
+                    props.put(entryKey, entryValue.getAsString());
+                    break;
+            }
+        }
+
+        updateThing(editThing().withProperties(props).build());
     }
 
     /**

@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.PropertyDiscovery;
-import org.openhab.binding.zigbee2mqtt.internal.mqtt.TopicHomeassistant;
+import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +44,16 @@ public class Zigbee2MqttPropertyDiscovery extends Zigbee2MqttDiscovery<PropertyD
     }
 
     @Override
-    protected List<PropertyDiscovery> processResultSet(HashMap<TopicHomeassistant, JsonObject> discoveryResult) {
+    protected List<PropertyDiscovery> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult) {
 
         HashMap<String, PropertyDiscovery> props = new HashMap<>();
 
-        for (Entry<TopicHomeassistant, JsonObject> entry : discoveryResult.entrySet()) {
+        for (Entry<DiscoveryTopic, JsonObject> entry : discoveryResult.entrySet()) {
 
             JsonObject deviceinfo = entry.getValue().get("device").getAsJsonObject();
 
             if (deviceinfo != null) {
-                TopicHomeassistant key = entry.getKey();
+                DiscoveryTopic key = entry.getKey();
                 addProperties(key.getTopic(), key.getIeeeAddr(), props, deviceinfo);
             }
         }

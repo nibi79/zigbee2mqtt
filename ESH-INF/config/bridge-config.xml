@@ -47,13 +47,18 @@
 			<description>Password to access the MQTT-Broker.</description>
 		</parameter>
 
-		<parameter name="mqttbrokerBaseTopic" groupName="zigbee2mqttServer" type="text">
+		<parameter name="z2mBaseTopic" groupName="zigbee2mqttServer" type="text">
 			<label>Base topic</label>
 			<description>Base topic which is used by zigbee2mqtt.</description>
 			<default>zigbee2mqtt</default>
 		</parameter>
-		
 
+		<parameter name="z2mDiscoveryTopic" groupName="zigbee2mqttServer" type="text">
+			<label>Discover topic</label>
+			<description>Discover topic which is used by zigbee2mqtt (HomeAssistant).</description>
+			<default>homeassistant</default>
+		</parameter>
+		
 	</config-description>
 
 </config-description:config-descriptions>

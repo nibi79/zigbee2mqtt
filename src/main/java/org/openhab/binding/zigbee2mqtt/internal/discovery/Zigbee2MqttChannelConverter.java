@@ -134,126 +134,84 @@ public class Zigbee2MqttChannelConverter {
      */
     private Channel createChannel(String channelId, Map<String, Object> config, ThingUID thingUID) {
 
+        ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+
         switch (channelId) {
 
             // channel binary_sensor
             case CHANNEL_NAME_OCCUPANCY:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_OCCUPANCY,
-                        ChannelKind.STATE, CHANNEL_LABEL_OCCUPANCY);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_PRESENCE:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_PRESENCE, ChannelKind.STATE,
-                        CHANNEL_LABEL_PRESENCE);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_CONTACT:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_CONTACT, CHANNEL_CONTACT, ChannelKind.STATE,
-                        CHANNEL_LABEL_CONTACT);
+                return createStateChannel(channelUID, ITEM_TYPE_CONTACT, channelTypeUID, config);
 
             case CHANNEL_NAME_WATER_LEAK:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_WATER_LEAK,
-                        ChannelKind.STATE, CHANNEL_LABEL_WATER_LEAK);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_SMOKE:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_SMOKE, ChannelKind.STATE,
-                        CHANNEL_LABEL_SMOKE);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_GAS:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_GAS, ChannelKind.STATE,
-                        CHANNEL_LABEL_GAS);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_ROUTER:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_ROUTER, ChannelKind.STATE,
-                        CHANNEL_LABEL_ROUTER);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_BATTERY_LOW:
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_BATTERY_LOW,
-                        ChannelKind.STATE, CHANNEL_LABEL_BATTERY_LOW);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             // channel sensor
             case CHANNEL_NAME_ILLUMINANCE:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_ILLUMINANCE,
-                        ChannelKind.STATE, CHANNEL_LABEL_ILLUMINANCE);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_HUMIDITY:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_HUMIDITY, ChannelKind.STATE,
-                        CHANNEL_LABEL_HUMIDITY);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_TEMPERATURE:
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_TEMPERATURE,
-                        ChannelKind.STATE, CHANNEL_LABEL_TEMPERATURE);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_PRESSURE:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_PRESSURE, ChannelKind.STATE,
-                        CHANNEL_LABEL_PRESSURE);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_CLICK:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_CLICK, ChannelKind.TRIGGER,
-                        CHANNEL_LABEL_CLICK);
+                return createTriggerChannel(channelUID, channelTypeUID, config);
 
             case CHANNEL_NAME_POWER:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_POWER, ChannelKind.TRIGGER,
-                        CHANNEL_LABEL_POWER);
+                return createTriggerChannel(channelUID, channelTypeUID, config);
 
             case CHANNEL_NAME_ACTION:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_ACTION, ChannelKind.TRIGGER,
-                        CHANNEL_LABEL_ACTION);
+                return createTriggerChannel(channelUID, channelTypeUID, config);
 
             case CHANNEL_NAME_LOCK:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_LOCK, ChannelKind.TRIGGER,
-                        CHANNEL_LABEL_LOCK);
+                return createTriggerChannel(channelUID, channelTypeUID, config);
 
             case CHANNEL_NAME_POWER_BATTERY:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_POWER_BATTERY,
-                        ChannelKind.STATE, CHANNEL_LABEL_POWER_BATTERY);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_LINKQUALITY:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_NUMBER, CHANNEL_LINKQUALITY,
-                        ChannelKind.STATE, CHANNEL_LABEL_LINKQUALITY);
+                return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_GAS_DENSITY:
+                return createStateChannel(channelUID, ITEM_TYPE_STRING, channelTypeUID, config);
 
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_GAS_DENSITY,
-                        ChannelKind.STATE, CHANNEL_LABEL_GAS_DENSITY);
             case CHANNEL_NAME_COVER:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_STRING, CHANNEL_COVER, ChannelKind.STATE,
-                        CHANNEL_LABEL_COVER);
+                return createStateChannel(channelUID, ITEM_TYPE_STRING, channelTypeUID, config);
 
             case CHANNEL_NAME_STATE:
-
-                return createChannel(channelId, thingUID, config, ITEM_TYPE_SWITCH, CHANNEL_STATE, ChannelKind.STATE,
-                        CHANNEL_LABEL_STATE);
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
             case CHANNEL_NAME_BRIGHTNESS:
-
-                return createChannel(CHANNEL_NAME_BRIGHTNESS, thingUID, config, ITEM_TYPE_DIMMER, CHANNEL_BRIGHTNESS,
-                        ChannelKind.STATE, CHANNEL_LABEL_BRIGHTNESS);
+                return createStateChannel(channelUID, ITEM_TYPE_DIMMER, channelTypeUID, config);
 
             case CHANNEL_NAME_COLORTEMP:
-
-                return createChannel(CHANNEL_NAME_COLORTEMP, thingUID, config, ITEM_TYPE_DIMMER, CHANNEL_COLORTEMP,
-                        ChannelKind.STATE, CHANNEL_LABEL_COLORTEMP);
+                return createStateChannel(channelUID, ITEM_TYPE_DIMMER, channelTypeUID, config);
 
             case CHANNEL_NAME_COLOR:
-
-                return createChannel(CHANNEL_NAME_COLOR, thingUID, config, ITEM_TYPE_COLOR, CHANNEL_COLORTEMP,
-                        ChannelKind.STATE, CHANNEL_LABEL_COLOR);
+                return createStateChannel(channelUID, ITEM_TYPE_COLOR, channelTypeUID, config);
 
             default:
                 logger.warn("no mapping for creating chhannel  for channelId '{}'", channelId);
@@ -263,23 +221,50 @@ public class Zigbee2MqttChannelConverter {
     }
 
     /**
-     * Build the channel.
+     * Build a state channel.
      *
-     * @param channelId
-     * @param thingUID
-     * @param config
+     * @param channelUID
      * @param itemType
      * @param channelTypeUID
-     * @param channelLabel
+     * @param config
      * @return
      */
-    private Channel createChannel(String channelId, ThingUID thingUID, Map<String, Object> config, String itemType,
-            ChannelTypeUID channelTypeUID, ChannelKind channelKind, String channelLabel) {
+    private Channel createStateChannel(ChannelUID channelUID, String itemType, ChannelTypeUID channelTypeUID,
+            Map<String, Object> config) {
 
-        ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+        return createChannel(channelUID, itemType, channelTypeUID, ChannelKind.STATE, config);
+    }
 
-        Channel channel = ChannelBuilder.create(channelUID, itemType).withConfiguration(new Configuration(config))
-                .withType(channelTypeUID).withLabel(channelLabel).withKind(channelKind).build();
+    /**
+     * Build a trigger channel.
+     *
+     * @param channelUID
+     * @param itemType
+     * @param channelTypeUID
+     * @param config
+     * @return
+     */
+    private Channel createTriggerChannel(ChannelUID channelUID, ChannelTypeUID channelTypeUID,
+            Map<String, Object> config) {
+
+        return createChannel(channelUID, null, channelTypeUID, ChannelKind.TRIGGER, config);
+    }
+
+    /**
+     * Build the channel.
+     *
+     * @param channelUID
+     * @param itemType
+     * @param channelTypeUID
+     * @param channelKind
+     * @param config
+     * @return
+     */
+    private Channel createChannel(ChannelUID channelUID, String itemType, ChannelTypeUID channelTypeUID,
+            ChannelKind channelKind, Map<String, Object> config) {
+
+        Channel channel = ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID).withKind(channelKind)
+                .withConfiguration(new Configuration(config)).build();
 
         return channel;
     }
