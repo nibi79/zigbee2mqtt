@@ -115,6 +115,12 @@ Bridge zigbee2mqtt:zigbee2mqttServer:z2m [
 
 ### .items
 ```
+// Zigbee2Mqtt Server
+Group gZ2m
+String Z2mLogLevel "LogLevel" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:logLevel"}
+Switch Z2mPermitJoin "PermitJoin" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:permitJoin"}
+Image Z2mNetworkMap "NetworkMap" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:networkMap"}
+
 // Xiaomi Sensor (WSDCGQ11LM)
 Group gXiaomiWSDCGQ11LM
 Number XiaomiWSDCGQ11LMTemperature "Temperatur OD [%.1f °C]" <temperature> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:temperature"}
@@ -137,8 +143,8 @@ Number XiaomiMFKZQ01LMBattery "Battery [%.1f %%]" <batterylevel> (gXiaomiMFKZQ01
 //Osram Bulb (AC03645)
 Group gOsramAC03645
 Switch OsramAC03645Power "Power" <light> (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:state"}
-Number OsramAC03645Brightness "Brightness [%d]" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:brightness"}
-Number OsramAC03645Colortemp "Colortemp" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:color_temp"}
+Dimmer OsramAC03645Brightness "Brightness [%d]" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:brightness"}
+Dimmer OsramAC03645Colortemp "Colortemp" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:color_temp"}
 Color OsramAC03645RGBW "Color" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:color"}
 Number OsramAC03645Linkquality "Linquality [%d]" <signal> (gOsramAC03645) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:linkquality"}
 ```
@@ -147,8 +153,13 @@ Number OsramAC03645Linkquality "Linquality [%d]" <signal> (gOsramAC03645) {chann
 ```
 sitemap zigbee2mqtt label="Zigbee2Mqtt"
 { 
-    Frame label="XiaomiWSDCGQ11LM SENSOR"
-    {
+    Frame label="Zigbee2Mqtt Server"{
+        Selection item=Z2mLogLevel  mappings=[debug="Debug", info="Info", warn="Warn", error="Error"]
+        Switch item=Z2mPermitJoin
+        Image item=Z2mNetworkMap
+    }
+
+    Frame label="XiaomiWSDCGQ11LM SENSOR"{
         Text item=XiaomiWSDCGQ11LMTemperature 
         Text item=XiaomiWSDCGQ11LMHumidity
         Text item=XiaomiWSDCGQ11LMPressure
@@ -156,22 +167,19 @@ sitemap zigbee2mqtt label="Zigbee2Mqtt"
         Text item=XiaomiWSDCGQ11LMBattery
     }
 
-    Frame label="XiaomiMCCGQ11LM DOOR"
-    {
+    Frame label="XiaomiMCCGQ11LM DOOR"{
         Switch item=XiaomiMCCGQ11LMContact
         Text item=XiaomiMCCGQ11LMLinkquality
         Text item=XiaomiMCCGQ11LMBattery     
     }
 
 
-    Frame label="XiaomiMFKZQ01LM CUBE"
-    {
+    Frame label="XiaomiMFKZQ01LM CUBE"{
         Text item=XiaomiMFKZQ01LMLinkquality
         Text item=XiaomiMFKZQ01LMBattery     
     }
 
-    Frame label="OsramAC03645 BULB"
-    {
+    Frame label="OsramAC03645 BULB"{
         Switch item=OsramAC03645Power 
         Slider item=OsramAC03645Brightness
         Slider item=OsramAC03645Colortemp
