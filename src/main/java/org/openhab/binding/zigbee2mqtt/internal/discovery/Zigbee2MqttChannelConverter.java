@@ -158,6 +158,9 @@ public class Zigbee2MqttChannelConverter {
             case CHANNEL_NAME_GAS:
                 return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
+            case CHANNEL_NAME_CARBON_MONOXIDE:
+                return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
+
             case CHANNEL_NAME_ROUTER:
                 return createStateChannel(channelUID, ITEM_TYPE_SWITCH, channelTypeUID, config);
 
@@ -189,7 +192,7 @@ public class Zigbee2MqttChannelConverter {
             case CHANNEL_NAME_LOCK:
                 return createTriggerChannel(channelUID, channelTypeUID, config);
 
-            case CHANNEL_NAME_POWER_BATTERY:
+            case CHANNEL_NAME_BATTERY:
                 return createStateChannel(channelUID, ITEM_TYPE_NUMBER, channelTypeUID, config);
 
             case CHANNEL_NAME_LINKQUALITY:
