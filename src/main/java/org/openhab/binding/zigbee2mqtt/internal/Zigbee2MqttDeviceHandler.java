@@ -240,15 +240,17 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                     switch (channelKey) {
 
                         // TODO use converters for reading states
-
                         // type sensors
-                        // TODO implement sensors channels: power, lock, gas_density, cover
                         case CHANNEL_NAME_ILLUMINANCE:
                         case CHANNEL_NAME_HUMIDITY:
                         case CHANNEL_NAME_TEMPERATURE:
                         case CHANNEL_NAME_PRESSURE:
+                        case CHANNEL_NAME_POWER:
+                        case CHANNEL_NAME_LOCK:
+                        case CHANNEL_NAME_BATTERY:
                         case CHANNEL_NAME_LINKQUALITY:
-                        case CHANNEL_NAME_POWER_BATTERY:
+                        case CHANNEL_NAME_GAS_DENSITY:
+                        case CHANNEL_NAME_COVER:
                             updateState(channel.getUID(), new DecimalType(channelValue.getAsString()));
                             break;
 
@@ -269,10 +271,15 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
                             break;
 
                         // type binary-sensors
-                        // TODO implement binary-sensors channels: presence, smoke, gas, router, battery_low
                         // TODO use payload_on / payload_of for binary-sensors
-                        case CHANNEL_NAME_WATER_LEAK:
                         case CHANNEL_NAME_OCCUPANCY:
+                        case CHANNEL_NAME_PRESENCE:
+                        case CHANNEL_NAME_WATER_LEAK:
+                        case CHANNEL_NAME_SMOKE:
+                        case CHANNEL_NAME_GAS:
+                        case CHANNEL_NAME_CARBON_MONOXIDE:
+                        case CHANNEL_NAME_ROUTER:
+                        case CHANNEL_NAME_BATTERY_LOW:
                             updateState(channel.getUID(), channelValue.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
                             break;
 

@@ -65,6 +65,7 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_NAME_WATER_LEAK = "water_leak";
     public static final String CHANNEL_NAME_SMOKE = "smoke";
     public static final String CHANNEL_NAME_GAS = "gas";
+    public static final String CHANNEL_NAME_CARBON_MONOXIDE = "carbon_monoxide";
     public static final String CHANNEL_NAME_ROUTER = "router";
     public static final String CHANNEL_NAME_BATTERY_LOW = "battery_low";
     // config channel senors
@@ -77,7 +78,7 @@ public class Zigbee2MqttBindingConstants {
     public static final String CHANNEL_NAME_ACTION = "action";
     public static final String CHANNEL_NAME_BRIGHTNESS = "brightness";
     public static final String CHANNEL_NAME_LOCK = "lock";
-    public static final String CHANNEL_NAME_POWER_BATTERY = "battery";
+    public static final String CHANNEL_NAME_BATTERY = "battery";
     public static final String CHANNEL_NAME_LINKQUALITY = "linkquality";
     public static final String CHANNEL_NAME_GAS_DENSITY = "gas_density";
     public static final String CHANNEL_NAME_COVER = "cover";
