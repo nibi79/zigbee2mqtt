@@ -94,11 +94,106 @@ Example NetworkMap:
 | action     | `String` | This is a trigger channel and cannot be link to an item. The values depend on device e.g.: shake, wakeup, fall, tap, slide, flip180 ... |
 
 ## File based configuration
+
+### .things
+```
+Bridge zigbee2mqtt:zigbee2mqttServer:z2m [ 
+    mqttbrokerIpAddress="localhost", 
+    mqttbrokerPort=1883, 
+    mqttbrokerClientID="openHAB.zigbee2mqtt", 
+    mqttbrokerUsername="openhabian", 
+    mqttbrokerPassword="*****",
+    z2mBaseTopic="zigbee2mqtt", 
+    z2mDiscoveryTopic="homeassistant" ] {
+    
+   Thing zigbee2mqttDevice XiaomiMCCGQ11LM "Xiaomi MCCGQ11LM door" @ "Zigbee2Mqtt" [ieeeAddr="0x00158d0002286a02"]
+   Thing zigbee2mqttDevice XiaomiWSDCGQ11LM "Xiaomi WSDCGQ11LM temperature" @ "Zigbee2Mqtt" [ieeeAddr="0x00158d0002320b4f"]
+   Thing zigbee2mqttDevice XiaomiMFKZQ01LM "Xiaomi MFKZQ01LM cube" @ "Zigbee2Mqtt" [ieeeAddr="0x00158d000276f951"]
+   Thing zigbee2mqttDevice OsramAC03645 "Osram AC03645 bulb" @ "Zigbee2Mqtt" [ieeeAddr="0x7cb03eaa00ada0df"]
+}
+```
+
+### .items
+```
+// Zigbee2Mqtt Server
+Group gZ2m
+String Z2mLogLevel "LogLevel" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:logLevel"}
+Switch Z2mPermitJoin "PermitJoin" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:permitJoin"}
+Image Z2mNetworkMap "NetworkMap" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:networkMap"}
+
+// Xiaomi Sensor (WSDCGQ11LM)
+Group gXiaomiWSDCGQ11LM
+Number XiaomiWSDCGQ11LMTemperature "Temperatur OD [%.1f °C]" <temperature> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:temperature"}
+Number XiaomiWSDCGQ11LMHumidity "Humidity [%d %%]" <humidity> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:hunidity"}
+Number XiaomiWSDCGQ11LMPressure "Pressure [%d mbar]" <pressure> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:pressure"}
+Number XiaomiWSDCGQ11LMLinkquality "Linquality [%d]" <signal> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:linkquality"}
+Number XiaomiWSDCGQ11LMBattery "Battery [%.1f %%]" <batterylevel> (gXiaomiWSDCGQ11LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiWSDCGQ11LM:battery"}
+
+// Xiaomi Door (MCCGQ11LM)
+Group gXiaomiMCCGQ11LM
+Contact XiaomiMCCGQ11LMContact "Door [%s]" <door> (gXiaomiMCCGQ11LM) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMCCGQ11LM:contact"}
+Number XiaomiMCCGQ11LMLinkquality "Linquality [%d]" <signal> (gXiaomiMCCGQ11LM) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMCCGQ11LM:linkquality"}
+Number XiaomiMCCGQ11LMBattery  "Battery [%.1f %%]" <batterylevel> (gXiaomiMCCGQ11LM) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMCCGQ11LM:battery"}
+
+// Xiaomi Cube (MFKZQ01LM)
+Group gXiaomiMFKZQ01LM
+Number XiaomiMFKZQ01LMLinkquality "Linquality [%d]" <signal> (gXiaomiMFKZQ01LM) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMFKZQ01LM:linkquality"}
+Number XiaomiMFKZQ01LMBattery "Battery [%.1f %%]" <batterylevel> (gXiaomiMFKZQ01LM) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMFKZQ01LM:battery"}
+
+//Osram Bulb (AC03645)
+Group gOsramAC03645
+Switch OsramAC03645Power "Power" <light> (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:state"}
+Dimmer OsramAC03645Brightness "Brightness [%d]" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:brightness"}
+Dimmer OsramAC03645Colortemp "Colortemp" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:color_temp"}
+Color OsramAC03645RGBW "Color" (gOsramAC03645) { channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:color"}
+Number OsramAC03645Linkquality "Linquality [%d]" <signal> (gOsramAC03645) {channel="zigbee2mqtt:zigbee2mqttDevice:z2m:OsramAC03645:linkquality"}
+```
+
+### .sitemap
+```
+sitemap zigbee2mqtt label="Zigbee2Mqtt"
+{ 
+    Frame label="Zigbee2Mqtt Server"{
+        Selection item=Z2mLogLevel  mappings=[debug="Debug", info="Info", warn="Warn", error="Error"]
+        Switch item=Z2mPermitJoin
+        Image item=Z2mNetworkMap
+    }
+
+    Frame label="XiaomiWSDCGQ11LM SENSOR"{
+        Text item=XiaomiWSDCGQ11LMTemperature 
+        Text item=XiaomiWSDCGQ11LMHumidity
+        Text item=XiaomiWSDCGQ11LMPressure
+        Text item=XiaomiWSDCGQ11LMLinkquality
+        Text item=XiaomiWSDCGQ11LMBattery
+    }
+
+    Frame label="XiaomiMCCGQ11LM DOOR"{
+        Switch item=XiaomiMCCGQ11LMContact
+        Text item=XiaomiMCCGQ11LMLinkquality
+        Text item=XiaomiMCCGQ11LMBattery     
+    }
+
+
+    Frame label="XiaomiMFKZQ01LM CUBE"{
+        Text item=XiaomiMFKZQ01LMLinkquality
+        Text item=XiaomiMFKZQ01LMBattery     
+    }
+
+    Frame label="OsramAC03645 BULB"{
+        Switch item=OsramAC03645Power 
+        Slider item=OsramAC03645Brightness
+        Slider item=OsramAC03645Colortemp
+        Colorpicker item=OsramAC03645RGBW
+        Text item=OsramAC03645Linkquality
+    }
+} 
+```
+
 ### .rules
 ```
  rule "Zigbee2Mqtt Cube SLIDE"
  when
-   Channel "zigbee2mqtt:zigbee2mqttDevice:86a2833a:0x00158d00d38:action" triggered "slide"
+   Channel "zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMFKZQ01LM:action" triggered "slide"
  then
    logInfo("cube", "slided" )
 
@@ -108,7 +203,7 @@ or
 ```
 rule "Zigbee2Mqtt Cube action"
 when
-    Channel "zigbee2mqtt:zigbee2mqttDevice:86a2833a:0x00158d00d38:action" triggered
+    Channel "zigbee2mqtt:zigbee2mqttDevice:z2m:XiaomiMFKZQ01LM:action" triggered
 then
     switch(receivedEvent.getEvent()) {
         case "slide": {
@@ -142,7 +237,7 @@ In any case please provide some information about your problem:
 
 - openHAB and binding version 
 - error description and steps to retrace if applicable
-- any related `[WARN]`/`[ERROR]` from openhab.log
+- any related `[WARN]`/`[ERROR]` from openhab.log (`log:set DEBUG org.openhab.binding.zigbee2mqtt`)
 - whether it's the binding, bridge, device or channel related issue
 
 For the sake of documentation please use English language. 
