@@ -237,7 +237,7 @@ In any case please provide some information about your problem:
 
 - openHAB and binding version 
 - error description and steps to retrace if applicable
-- any related `[WARN]`/`[ERROR]` from openhab.log (`log:set DEBUG org.openhab.binding.zigbee2mqt`t)
+- any related `[WARN]`/`[ERROR]` from openhab.log (`log:set DEBUG org.openhab.binding.zigbee2mqtt`)
 - whether it's the binding, bridge, device or channel related issue
 
 For the sake of documentation please use English language. 
