@@ -51,7 +51,6 @@ Following options can be set for the **Zigbee2Mqtt Server**:
 |-----------|-----------|
 | mqttbrokerIpAddress | IP-Address  or hostname of the MQTT-Broker|
 | mqttbrokerPort | Port of the MQTT-Broker |
-| mqttbrokerClientID | Client ID for MQTT-Broker. |
 | mqttbrokerUsername | Username to access the MQTT-Broker |
 | mqttbrokerPassword | Password to access the MQTT-Broker. |
 | z2mBaseTopic | Base topic for Zigbee2Mqtt MQTT messages: default = 'zigbee2mqtt'. Can be edit in data/configuration.yaml -> `base_topic` |
@@ -100,7 +99,6 @@ Example NetworkMap:
 Bridge zigbee2mqtt:zigbee2mqttServer:z2m [ 
     mqttbrokerIpAddress="localhost", 
     mqttbrokerPort=1883, 
-    mqttbrokerClientID="openHAB.zigbee2mqtt", 
     mqttbrokerUsername="openhabian", 
     mqttbrokerPassword="*****",
     z2mBaseTopic="zigbee2mqtt", 
