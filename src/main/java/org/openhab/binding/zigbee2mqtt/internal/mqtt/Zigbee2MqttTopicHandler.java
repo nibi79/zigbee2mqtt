@@ -141,30 +141,21 @@ public class Zigbee2MqttTopicHandler {
     }
 
     /**
-     * @param ieeeAddr
-     * @return {@literal <baseTopic>/<ieeeAddr>}
+     * @param deviceId
+     * @return {@literal <baseTopic>/<deviceId>}
      */
-    public String getTopicDevice(String ieeeAddr) {
+    public String getTopicDevice(String deviceId) {
 
-        return baseTopic.concat("/" + ieeeAddr);
+        return baseTopic.concat("/" + deviceId);
     }
 
     /**
-     * @param ieeeAddr
-     * @return {@literal <<baseTopic>/<ieeeAddr>/get}
+     * @param deviceId
+     * @return {@literal <<baseTopic>/<deviceId>/get}
      */
-    public String getTopicDeviceGet(String ieeeAddr) {
+    public String getTopicDeviceGet(String deviceId) {
 
-        return baseTopic.concat("/" + ieeeAddr + "/get");
-    }
-
-    /**
-     * @param ieeeAddr
-     * @return {@literal <<baseTopic>/<ieeeAddr>/set}
-     */
-    public String getTopicDeviceSet(String ieeeAddr) {
-
-        return baseTopic.concat("/" + ieeeAddr + "/set");
+        return baseTopic.concat("/" + deviceId + "/get");
     }
 
 }

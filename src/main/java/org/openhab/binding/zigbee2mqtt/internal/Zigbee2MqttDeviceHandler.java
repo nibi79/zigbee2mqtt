@@ -84,7 +84,8 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
         if (bridgeHandler != null) {
             String ieeeAddr = (String) getThing().getConfiguration().get("ieeeAddr");
 
-            bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicDevice(ieeeAddr), this);
+            String deviceId = getThing().getProperties().get("friendly_name");
+            bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicDevice(deviceId), this);
 
             ThingBuilder thingBuilder = editThing();
 
@@ -107,7 +108,7 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
             updateStatus(ThingStatus.ONLINE);
 
             // initialize channels
-            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
+            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(deviceId), "{\"state\": \"\"}");
 
         } else {
 
