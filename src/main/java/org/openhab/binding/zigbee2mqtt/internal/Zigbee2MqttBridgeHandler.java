@@ -145,7 +145,7 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
         }
 
         MqttBrokerConnection c = new MqttBrokerConnection(host, config.getMqttbrokerPort(), false,
-                config.getMqttbrokerClientID());
+                CLIENTIDPRAEFIX + getThing().getUID().getId());
 
         String username = config.getMqttbrokerUsername();
         String password = config.getMqttbrokerPassword();
@@ -388,10 +388,10 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
     /**
      * Handles the log message:
-     *  - log_level
-     *  - permit_join
-     *  - add all other jsonvalues to the bridge properties
-     *  
+     * - log_level
+     * - permit_join
+     * - add all other jsonvalues to the bridge properties
+     *
      * @param jsonMessage
      */
     private void handleConfigValues(JsonObject jsonMessage) {

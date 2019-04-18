@@ -42,6 +42,8 @@ public class Zigbee2MqttBindingConstants {
     public static final String USER_NAME = "username";
     public static final String PASSWORD = "password";
 
+    public static final String CLIENTIDPRAEFIX = "oh.z2m.";
+
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Collections.singleton(THING_TYPE_GATEWAY);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY, THING_TYPE_DEVICE).collect(Collectors.toSet()));
