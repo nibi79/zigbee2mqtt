@@ -21,7 +21,6 @@ public class Zigbee2MqttBridgeConfiguration {
 
     private String mqttbrokerIpAddress;
     private Integer mqttbrokerPort;
-    private String mqttbrokerClientID;
     private String mqttbrokerUsername;
     private String mqttbrokerPassword;
     private String z2mBaseTopic;
@@ -65,14 +64,6 @@ public class Zigbee2MqttBridgeConfiguration {
 
     public void setZ2mBaseTopic(String z2mBaseTopic) {
         this.z2mBaseTopic = z2mBaseTopic;
-    }
-
-    public String getMqttbrokerClientID() {
-        return mqttbrokerClientID;
-    }
-
-    public void setMqttbrokerClientID(String mqttbrokerClientID) {
-        this.mqttbrokerClientID = mqttbrokerClientID;
     }
 
     public String getZ2mDiscoveryTopic() {

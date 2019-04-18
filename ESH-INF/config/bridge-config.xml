@@ -30,12 +30,6 @@
 			<default>1883</default>
 		</parameter>
 
-		<parameter name="mqttbrokerClientID" groupName="zigbee2mqttServer" type="text">
-			<label>Client ID</label>
-			<description>Client ID for MQTT-Broker.</description>
-			<default>openHAB.zigbee2mqtt</default>
-		</parameter>
-
 		<parameter name="mqttbrokerUsername" groupName="zigbee2mqttServer" type="text">
 			<label>Username</label>
 			<description>Username to access the MQTT-Broker.</description>			
