@@ -39,7 +39,8 @@ Currently following Things are supported:
 
 ## Discovery
 
-After configuring the **Zigbee2Mqtt Server**, automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration. 
+The Binding tries to discover the **Zigbee2Mqtt Server** by scanning the network for a MQTT Broker (using port 1883, without credentials).
+After adding (manually or by auto discovery) and configuring **Zigbee2Mqtt Server** automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration. 
 
 If new devices joined to the network ([documentation](http://www.zigbee2mqtt.io/getting_started/pairing_devices.html)) they will automatically appear in the INBOX.
 
