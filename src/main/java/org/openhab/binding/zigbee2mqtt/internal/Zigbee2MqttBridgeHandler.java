@@ -99,8 +99,9 @@ public class Zigbee2MqttBridgeHandler extends BaseBridgeHandler
 
             if (!mqttBrokerConnection.start().get().booleanValue()) {
 
-                logger.error("Cannot connect to broker: {}", config.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect to broker");
+                logger.error("Cannot connect to MQTT broker: {}", config.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot connect to MQTT broker");
             }
 
         } catch (InterruptedException | ExecutionException e) {
