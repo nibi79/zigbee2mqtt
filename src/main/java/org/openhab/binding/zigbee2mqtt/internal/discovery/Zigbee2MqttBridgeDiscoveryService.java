@@ -93,6 +93,8 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
         String subnet = getSubnet();
         if (subnet != null) {
 
+            logger.debug("Starting Zigbee2MqttServer discovery - subnet = {}", subnet);
+
             // Polling all potential IPs of this subnet
             for (int ip = 0; ip <= 255; ip++) {
 
@@ -110,6 +112,8 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
                 }
 
             }
+
+            logger.debug("Stop Zigbee2MqttServer discovery");
 
         } else {
             logger.info("Automatic discovery fails: no LAN subnet found");
