@@ -12,70 +12,48 @@
  */
 package org.openhab.binding.zigbee2mqtt.internal.discovery;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
-import org.openhab.binding.zigbee2mqtt.internal.discovery.result.DiscoveryResult;
-import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * The {@link Zigbee2MqttDiscovery} is a service for discovering channels
  *
  * @author Nils
  */
-public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements Zigbee2MqttMessageSubscriber {
+public abstract class Zigbee2MqttDiscovery implements Zigbee2MqttMessageSubscriber {
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDiscovery.class);
 
     protected Zigbee2MqttBridgeHandler bridgeHandler = null;
-
-    private String ieeeAddr = null;
-
-    private HashMap<DiscoveryTopic, JsonObject> discoveryResult = new HashMap<>();
+    private String discoveryTopic = null;
+    private String triggerTopic = null;
 
     /**
      * @param bridgeHandler
+     * @param discoveryTopic
      * @throws IllegalArgumentException
      */
-    public Zigbee2MqttDiscovery(Zigbee2MqttBridgeHandler bridgeHandler) throws IllegalArgumentException {
+    public Zigbee2MqttDiscovery(Zigbee2MqttBridgeHandler bridgeHandler, String discoveryTopic)
+            throws IllegalArgumentException {
         this.bridgeHandler = bridgeHandler;
+        this.discoveryTopic = discoveryTopic;
     }
 
     /**
-     * @param thing
-     * @return
+     * @param bridgeHandler
+     * @param discoveryTopic
+     * @param triggerTopic
+     * @throws IllegalArgumentException
      */
-    public List<T> discover(String ieeeAddr) {
-
-        this.ieeeAddr = ieeeAddr;
-
-        List<T> result = null;
-
-        boolean accomplished = runDiscovery();
-
-        if (accomplished) {
-
-            result = processResultSet(discoveryResult);
-        }
-        return result;
+    public Zigbee2MqttDiscovery(Zigbee2MqttBridgeHandler bridgeHandler, String discoveryTopic, String triggerTopic)
+            throws IllegalArgumentException {
+        this.bridgeHandler = bridgeHandler;
+        this.discoveryTopic = discoveryTopic;
+        this.triggerTopic = triggerTopic;
     }
-
-    /**
-     * Process the resultset which contains config messages and convert it to list of DiscoveryResults.
-     *
-     * @param ieeeAddr
-     * @param discoveryResult
-     * @return
-     */
-    protected abstract List<T> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult);
 
     /**
      * Subscribes to homeassistant topic to recieve configs .
@@ -83,47 +61,39 @@ public abstract class Zigbee2MqttDiscovery<T extends DiscoveryResult> implements
      * @param thing
      * @return
      */
-    private boolean runDiscovery() {
+    protected void startDiscovery() {
 
         if (bridgeHandler == null) {
-            return false;
+            return;
         }
         // Trigger no discovery if offline
         if (bridgeHandler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-            return false;
+            return;
         }
 
-        String discoveryTopic = bridgeHandler.getTopicHandler().getDiscoveryTopic() + "/#";
         try {
 
             logger.debug("mqtt: subribe to topic '{}'", discoveryTopic);
             bridgeHandler.subscribe(discoveryTopic, this);
 
+            if (triggerTopic != null) {
+                // trigger message
+                bridgeHandler.publish(triggerTopic, "get");
+            }
+
             // pause until channels discovered form discovery topic
             Thread.sleep(2000);
-
-            return true;
 
         } catch (InterruptedException e) {
 
             logger.warn(e.getMessage(), e);
-            return false;
+
         } finally {
 
             logger.debug("mqtt: unsubribe from topic '{}'", discoveryTopic);
             bridgeHandler.unsubscribe(discoveryTopic, this);
         }
 
-    }
-
-    @Override
-    public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
-
-        DiscoveryTopic topicHomeassistant = new DiscoveryTopic(topic);
-        if (ieeeAddr.equals(topicHomeassistant.getIeeeAddr())) {
-
-            discoveryResult.put(topicHomeassistant, jsonMessage);
-        }
     }
 
 }

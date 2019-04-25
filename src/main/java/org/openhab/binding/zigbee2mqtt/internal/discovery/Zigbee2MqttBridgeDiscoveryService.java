@@ -14,6 +14,14 @@ package org.openhab.binding.zigbee2mqtt.internal.discovery;
 
 import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstants.*;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -24,6 +32,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttTopicHandler;
 import org.osgi.service.component.annotations.Component;
@@ -45,22 +54,18 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttBridgeDiscoveryService.class);
 
-    MqttBrokerConnection mqttBrokerConnection = null;
-
     /**
      * Maximum time to search for server in seconds.
      */
     private static final int SEARCH_TIME = 10;
 
+    private String currentIp = null;
+
     /**
      *
      */
     public Zigbee2MqttBridgeDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
-
-        mqttBrokerConnection = new MqttBrokerConnection("localhost", Integer.valueOf(1883), false,
-                "openHAB.zigbee2mqtt.discovery");
-        mqttBrokerConnection.start();
+        super(SUPPORTED_BRIDGE_TYPES, SEARCH_TIME);
 
     }
 
@@ -69,11 +74,12 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
      */
     public void discover() {
         startScan();
+
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES;
+        return SUPPORTED_BRIDGE_TYPES;
     }
 
     @Override
@@ -84,8 +90,66 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
 
-        mqttBrokerConnection.subscribe(new Zigbee2MqttTopicHandler().getTopicBridgeConfigDevices(), this);
-        mqttBrokerConnection.publish(new Zigbee2MqttTopicHandler().getTopicBridgeConfigDevicesGet(), "get".getBytes());
+        String subnet = getSubnet();
+        if (subnet != null) {
+
+            // Polling all potential IPs of this subnet
+            for (int ip = 0; ip <= 255; ip++) {
+
+                currentIp = subnet + String.valueOf(ip);
+
+                if (isLocalIpAddress(currentIp)) {
+                    currentIp = "localhost";
+                }
+
+                logger.trace("Polling {} ", currentIp);
+
+                if (pingHost(currentIp, 1883, 50)) {
+
+                    proveZ2MMqttBroker();
+                }
+
+            }
+
+        } else {
+            logger.info("Automatic discovery fails: no LAN subnet found");
+        }
+    }
+
+    /**
+     *
+     */
+    private void proveZ2MMqttBroker() {
+
+        MqttBrokerConnection mqttBrokerConnection = new MqttBrokerConnection(currentIp, Integer.valueOf(1883), false,
+                CLIENTIDPRAEFIX + "discovery");
+
+        mqttBrokerConnection.start();
+
+        while (MqttConnectionState.CONNECTING.equals(mqttBrokerConnection.connectionState())) {
+
+            logger.debug("try to connect to MQTT broker: {}", currentIp);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+
+        if (MqttConnectionState.CONNECTED.equals(mqttBrokerConnection.connectionState())) {
+
+            logger.debug("connected to MQTT broker: {}", currentIp);
+
+            mqttBrokerConnection.subscribe(new Zigbee2MqttTopicHandler().getTopicBridgeConfigDevices(), this);
+            mqttBrokerConnection.publish(new Zigbee2MqttTopicHandler().getTopicBridgeConfigDevicesGet(),
+                    "get".getBytes());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+        mqttBrokerConnection.stop();
     }
 
     @Override
@@ -105,12 +169,79 @@ public class Zigbee2MqttBridgeDiscoveryService extends AbstractDiscoveryService
                 ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, ieeeAddr);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withLabel("Zigbee2MqttServer - " + ieeeAddr).build();
+                        .withProperty(MQTTBROKER_IPADDRESS, currentIp).withLabel("Z2M Server - " + ieeeAddr).build();
 
                 thingDiscovered(discoveryResult);
             }
         }
 
+    }
+
+    /**
+     * Fast pinging of a subnet
+     *
+     * @see https://stackoverflow.com/questions/3584210/preferred-java-way-to-ping-an-http-url-for-availability
+     * @param host    Host to ping
+     * @param port    Port to ping
+     * @param timeout Timeout in milliseconds
+     * @return Ping result
+     */
+    private boolean pingHost(String host, int port, int timeout) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), timeout);
+            return true;
+        } catch (IOException e) {
+            return false; // Either timeout or unreachable or failed DNS lookup.
+        }
+    }
+
+    /**
+     * Scans all network adapters and takes the first occurrence of 192.0.0.0 or 10.0.0.0 subnet
+     *
+     * @return Subnet as String
+     */
+    private String getSubnet() {
+        try {
+            Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+            while (nis.hasMoreElements()) {
+                NetworkInterface ni = nis.nextElement();
+                Enumeration<InetAddress> ias = ni.getInetAddresses();
+                while (ias.hasMoreElements()) {
+                    InetAddress ia = ias.nextElement();
+                    byte[] ip = ia.getAddress();
+                    if (ip.length == 4) {// IPv4 support only
+                        if (ip[0] == (byte) 192 || ip[1] == 10) {
+                            String subnet = String.format("%d.%d.%d.", 0xff & ip[0], 0xff & ip[1], 0xff & ip[2]);
+                            return subnet;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // discovery fails
+        }
+        return null;
+    }
+
+    /**
+     * Check if given IP is localhost.
+     *
+     * @param ip
+     * @return
+     */
+    private boolean isLocalIpAddress(String ip) {
+        try {
+            InetAddress addr = InetAddress.getByName(ip);
+            // Check if the address is a valid special local or loop back
+            if (addr.isAnyLocalAddress() || addr.isLoopbackAddress()) {
+                return true;
+            }
+
+            // Check if the address is defined on any interface
+            return NetworkInterface.getByInetAddress(addr) != null;
+        } catch (SocketException | UnknownHostException e) {
+            return false;
+        }
     }
 
 }

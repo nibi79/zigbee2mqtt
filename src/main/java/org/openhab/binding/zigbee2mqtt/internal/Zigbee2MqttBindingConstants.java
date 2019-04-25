@@ -35,18 +35,20 @@ public class Zigbee2MqttBindingConstants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "zigbee2mqttServer");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "zigbee2mqttDevice");
 
-    /* List of all config properties */
-    // TODO
-    public static final String HOST = "host";
-    public static final String PORT = "port";
-    public static final String USER_NAME = "username";
-    public static final String PASSWORD = "password";
-
-    public static final String CLIENTIDPRAEFIX = "oh.z2m.";
-
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Collections.singleton(THING_TYPE_GATEWAY);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES = Collections.singleton(THING_TYPE_DEVICE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY, THING_TYPE_DEVICE).collect(Collectors.toSet()));
+
+    /* List of all config properties */
+    public static final String MQTTBROKER_IPADDRESS = "mqttbrokerIpAddress";
+    public static final String MQTTBROKER_PORT = "mqttbrokerPort";
+    public static final String MQTTBROKER_USERNAME = "mqttbrokerUsername";
+    public static final String MQTTBROKER_PASSWORD = "mqttbrokerPassword";
+    public static final String Z2M_BASE_TOPIC = "mqttbrokerPassword";
+    public static final String Z2M_DISCOVERY_TOPIC = "z2mDiscoveryTopic";
+
+    public static final String CLIENTIDPRAEFIX = "oh.z2m.";
 
     // List of all Channel ids
     public static final String CHANNEL_NAME_LOGLEVEL = "logLevel";

@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.zigbee2mqtt.internal.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
-import org.openhab.binding.zigbee2mqtt.internal.discovery.result.PropertyDiscovery;
-import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -31,61 +30,61 @@ import com.google.gson.JsonObject;
  *
  * @author Nils
  */
-public class Zigbee2MqttPropertyDiscovery extends Zigbee2MqttDiscovery<PropertyDiscovery> {
+public class Zigbee2MqttPropertyDiscovery extends Zigbee2MqttDiscovery {
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttPropertyDiscovery.class);
+
+    private String ieeeAddr = null;
+    private Map<String, String> discoveryResult = new HashMap<>();
 
     /**
      * @param bridgeHandler
      * @throws IllegalArgumentException
      */
     public Zigbee2MqttPropertyDiscovery(Zigbee2MqttBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(bridgeHandler);
-    }
 
-    @Override
-    protected List<PropertyDiscovery> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult) {
-
-        HashMap<String, PropertyDiscovery> props = new HashMap<>();
-
-        for (Entry<DiscoveryTopic, JsonObject> entry : discoveryResult.entrySet()) {
-
-            JsonObject deviceinfo = entry.getValue().get("device").getAsJsonObject();
-
-            if (deviceinfo != null) {
-                DiscoveryTopic key = entry.getKey();
-                addProperties(key.getTopic(), key.getIeeeAddr(), props, deviceinfo);
-            }
-        }
-
-        return new ArrayList<PropertyDiscovery>(props.values());
+        super(bridgeHandler, bridgeHandler.getTopicHandler().getTopicBridgeConfigDevices(),
+                bridgeHandler.getTopicHandler().getTopicBridgeConfigDevicesGet());
     }
 
     /**
-     * Add properties to list from given json.
-     *
-     * @param props
-     * @param json
+     * @param thing
+     * @return
      */
-    private void addProperties(String topic, String ieeeAddr, HashMap<String, PropertyDiscovery> props,
-            JsonObject json) {
+    public Map<String, String> discover(String ieeeAddr) {
 
-        for (Entry<String, JsonElement> entry : json.entrySet()) {
+        this.ieeeAddr = ieeeAddr;
 
-            if (entry.getValue().isJsonPrimitive()) {
+        startDiscovery();
 
-                PropertyDiscovery propertyDiscovery = new PropertyDiscovery(topic, ieeeAddr);
+        return discoveryResult;
+    }
 
-                propertyDiscovery.setKey(entry.getKey());
-                propertyDiscovery.setValue(entry.getValue().getAsString());
-                props.put(entry.getKey(), propertyDiscovery);
+    @Override
+    public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-                logger.debug("result entry processed: {}", propertyDiscovery.toString());
-            } else {
+        JsonArray message = jsonMessage.get("message").getAsJsonArray();
 
-                addProperties(topic, ieeeAddr, props, entry.getValue().getAsJsonObject());
+        for (JsonElement jsonElement : message) {
+
+            String discoveredIeeeAddr = jsonElement.getAsJsonObject().get("ieeeAddr").getAsString();
+
+            if (ieeeAddr.equals(discoveredIeeeAddr)) {
+
+                for (Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
+
+                    if (entry.getValue().isJsonPrimitive()) {
+
+                        logger.debug("{} - property discovered: key={}, value={}", entry.getKey(),
+                                entry.getValue().getAsString());
+
+                        discoveryResult.put(entry.getKey(), entry.getValue().getAsString());
+                    }
+                }
+
             }
         }
+
     }
 
 }

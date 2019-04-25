@@ -17,7 +17,6 @@ import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstan
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,14 +37,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttChannelConverter;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttChannelDiscovery;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.Zigbee2MqttPropertyDiscovery;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.ChannelDiscovery;
-import org.openhab.binding.zigbee2mqtt.internal.discovery.result.PropertyDiscovery;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,20 +79,12 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
         Zigbee2MqttBridgeHandler bridgeHandler = getZigbee2MqttBridgeHandler();
 
         if (bridgeHandler != null) {
+
             String ieeeAddr = (String) getThing().getConfiguration().get("ieeeAddr");
-
-            String deviceId = getThing().getProperties().get("friendly_name");
-            bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicDevice(deviceId), this);
-
-            ThingBuilder thingBuilder = editThing();
 
             // discover properties
             Zigbee2MqttPropertyDiscovery propertyDiscovery = new Zigbee2MqttPropertyDiscovery(bridgeHandler);
-            List<PropertyDiscovery> propertyDiscoveries = propertyDiscovery.discover(ieeeAddr);
-            Map<String, String> props = new HashMap<String, String>();
-            for (PropertyDiscovery prop : propertyDiscoveries) {
-                props.put(prop.getKey(), prop.getValue());
-            }
+            Map<String, String> props = propertyDiscovery.discover(ieeeAddr);
 
             // discover channels
             Zigbee2MqttChannelDiscovery channelDiscovery = new Zigbee2MqttChannelDiscovery(bridgeHandler);
@@ -103,12 +92,15 @@ public class Zigbee2MqttDeviceHandler extends BaseThingHandler implements Zigbee
             Zigbee2MqttChannelConverter channelConverter = new Zigbee2MqttChannelConverter();
             List<Channel> channels = channelConverter.convert(channelDiscoveries, thing);
 
-            updateThing(thingBuilder.withProperties(props).withChannels(channels).build());
+            updateThing(editThing().withProperties(props).withChannels(channels).build());
+
+            String deviceId = getThing().getProperties().get("friendly_name");
+            bridgeHandler.subscribe(bridgeHandler.getTopicHandler().getTopicDevice(deviceId), this);
 
             updateStatus(ThingStatus.ONLINE);
 
             // initialize channels
-            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(deviceId), "{\"state\": \"\"}");
+            bridgeHandler.publish(bridgeHandler.getTopicHandler().getTopicDeviceGet(ieeeAddr), "{\"state\": \"\"}");
 
         } else {
 

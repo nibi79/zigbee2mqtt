@@ -16,17 +16,20 @@ import static org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.Zigbee2MqttMessageSubscriber;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,7 @@ import com.google.gson.JsonObject;
  *
  * @author Nils
  */
-// @Component(service = Zigbee2MqttDiscoveryService.class, immediate = true, configurationPid = "discovery.zgbee2mqtt")
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "binding.zigbee2mqtt")
 public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implements Zigbee2MqttMessageSubscriber {
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttDiscoveryService.class);
@@ -55,7 +58,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
      *
      */
     public Zigbee2MqttDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SUPPORTED_DEVICE_TYPES, SEARCH_TIME);
     }
 
     /**
@@ -63,7 +66,7 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
      * @throws IllegalArgumentException
      */
     public Zigbee2MqttDiscoveryService(Zigbee2MqttBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SUPPORTED_DEVICE_TYPES, SEARCH_TIME);
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -76,13 +79,13 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES;
+        return SUPPORTED_DEVICE_TYPES;
     }
 
     @Override
     protected void startScan() {
 
-        // try {
+        removeOlderResults(getTimestampOfLastScan());
 
         if (bridgeHandler == null) {
             return;
@@ -118,17 +121,22 @@ public class Zigbee2MqttDiscoveryService extends AbstractDiscoveryService implem
                 ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, ieeeAddr);
 
                 Map<String, Object> properties = new HashMap<>();
-                properties.put("ieeeAddr", ieeeAddr);
-                properties.put("type", type);
-                properties.put("model", model);
-                properties.put("friendly_name", friendlyName);
+                for (Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
+                    if (entry.getValue().isJsonPrimitive()) {
+
+                        logger.trace("{} - property discovered: key={}, value={}", entry.getKey(),
+                                entry.getValue().getAsString());
+
+                        properties.put(entry.getKey(), entry.getValue().getAsString());
+                    }
+                }
 
                 logger.debug("device disvocered [ieeeAddr=" + ieeeAddr + ", type=" + type + ", model=" + model
                         + ", friendlyName=" + friendlyName + "]");
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
-                        .withLabel(friendlyName + " (" + model + ")").build();
+                        .withLabel("Z2M Device - " + friendlyName + " (" + model + ")").build();
 
                 thingDiscovered(discoveryResult);
             }

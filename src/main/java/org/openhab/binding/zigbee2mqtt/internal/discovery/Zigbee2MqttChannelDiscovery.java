@@ -13,10 +13,10 @@
 package org.openhab.binding.zigbee2mqtt.internal.discovery;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.zigbee2mqtt.internal.Zigbee2MqttBridgeHandler;
 import org.openhab.binding.zigbee2mqtt.internal.discovery.result.ChannelDiscovery;
 import org.openhab.binding.zigbee2mqtt.internal.mqtt.DiscoveryTopic;
@@ -31,46 +31,57 @@ import com.google.gson.JsonObject;
  *
  * @author Nils
  */
-public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery<ChannelDiscovery> {
+public class Zigbee2MqttChannelDiscovery extends Zigbee2MqttDiscovery {
 
     private final Logger logger = LoggerFactory.getLogger(Zigbee2MqttChannelDiscovery.class);
+
+    private String ieeeAddr = null;
+    private List<ChannelDiscovery> discoveryResult = new ArrayList<>();
 
     /**
      * @param bridgeHandler
      * @throws IllegalArgumentException
      */
     public Zigbee2MqttChannelDiscovery(Zigbee2MqttBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(bridgeHandler);
+
+        super(bridgeHandler, bridgeHandler.getTopicHandler().getDiscoveryTopic() + "/#");
+    }
+
+    /**
+     * @param thing
+     * @return
+     */
+    public List<ChannelDiscovery> discover(String ieeeAddr) {
+
+        this.ieeeAddr = ieeeAddr;
+
+        startDiscovery();
+
+        return discoveryResult;
     }
 
     @Override
-    protected List<ChannelDiscovery> processResultSet(HashMap<DiscoveryTopic, JsonObject> discoveryResult) {
+    public void processMessage(@NonNull String topic, @NonNull JsonObject jsonMessage) {
 
-        HashMap<String, ChannelDiscovery> channels = new HashMap<>();
+        DiscoveryTopic topicHomeassistant = new DiscoveryTopic(topic);
+        if (ieeeAddr.equals(topicHomeassistant.getIeeeAddr())) {
 
-        for (Entry<DiscoveryTopic, JsonObject> entry : discoveryResult.entrySet()) {
-
-            DiscoveryTopic topic = entry.getKey();
-
-            ChannelDiscovery channelDiscovery = new ChannelDiscovery(topic.getTopic(), topic.getIeeeAddr());
-            channelDiscovery.setObjectId(topic.getObjectId());
-            channelDiscovery.setType(topic.getType());
+            ChannelDiscovery channelDiscovery = new ChannelDiscovery(topicHomeassistant.getTopic(),
+                    topicHomeassistant.getIeeeAddr());
+            channelDiscovery.setObjectId(topicHomeassistant.getObjectId());
+            channelDiscovery.setType(topicHomeassistant.getType());
 
             // channel config
-            JsonObject json = entry.getValue();
-            for (Entry<String, JsonElement> prop : json.entrySet()) {
+            for (Entry<String, JsonElement> prop : jsonMessage.entrySet()) {
 
                 if (prop.getValue().isJsonPrimitive()) {
                     channelDiscovery.getConfig().put(prop.getKey(), prop.getValue().getAsString());
                 }
             }
 
-            channels.put(channelDiscovery.getObjetcId(), channelDiscovery);
+            logger.debug("{} - channel discovered: {}", ieeeAddr, channelDiscovery.toString());
 
-            logger.debug("result entry processed: {}", channelDiscovery.toString());
+            discoveryResult.add(channelDiscovery);
         }
-
-        return new ArrayList<ChannelDiscovery>(channels.values());
     }
-
 }
