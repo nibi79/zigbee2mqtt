@@ -27,8 +27,7 @@ This binding is currently under development. Your help and testing would be grea
 
 ## Installation and upgrade
 
-For an installation the [latest release](https://github.com/nibi79/zigbee2mqtt/releases) should be copied into the /addons folder of your openHAB installation.
-For an upgrade the existing file should be overwritten. On major or structural changes existing things might have to be deleted and recreated, existing channels might be kept. For further information please read release notes of a corresponding release.
+For the first installation of the binding you need to copy the [latest release](https://github.com/nibi79/zigbee2mqtt/releases)  into the /addons folder of your openHAB installation. In case you want to upgrade the binding to a newer version, please check the release notes first.
 
 ## Supported Things
 
@@ -39,8 +38,8 @@ Currently following Things are supported:
 
 ## Discovery
 
-The Binding tries to discover the **Zigbee2Mqtt Server** by scanning the network for a MQTT Broker (using port 1883, without credentials).
-After adding (manually or by auto discovery) and configuring **Zigbee2Mqtt Server** automatic discovery for **Zigbee2Mqtt Device** will start. If successful, your **Zigbee2Mqtt Device** will be found and can be added without further configuration. 
+The Binding supports two ways of configuration. Auto-discovery and manual configuration. Once the binding has been installed your network will be scanned on port 1883 to find any MQTT broker with disabled username/password authentication. It will then automatically add the required things **Zigbee2Mqtt Server**  and **Zigbee2Mqtt Device**.
+Manual configuration can be achieved via PaperUI - Configuration - Things - Add Thing “+” Button - Zigbee2mqtt Binding - Add manually - **Zigbee2Mqtt Server**. Here you can provide your broker IP, port, login credentials and if needed modified zigbee2mqtt base/dicover topics. Once the server thing has been added **Zigbee2Mqtt Device**s will be discovered automatically and appear in your PaperUI inbox. You just need to add them as new things.
 
 If new devices joined to the network ([documentation](http://www.zigbee2mqtt.io/getting_started/pairing_devices.html)) they will automatically appear in the INBOX.
 
@@ -119,6 +118,7 @@ Group gZ2m
 String Z2mLogLevel "LogLevel" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:logLevel"}
 Switch Z2mPermitJoin "PermitJoin" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:permitJoin"}
 Image Z2mNetworkMap "NetworkMap" (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:networkMap"}
+Switch Z2MRefreshNetworkMap (gZ2m) {channel="zigbee2mqtt:zigbee2mqttServer:z2m:networkMap"}
 
 // Xiaomi Sensor (WSDCGQ11LM)
 Group gXiaomiWSDCGQ11LM
@@ -156,6 +156,7 @@ sitemap zigbee2mqtt label="Zigbee2Mqtt"
         Selection item=Z2mLogLevel  mappings=[debug="Debug", info="Info", warn="Warn", error="Error"]
         Switch item=Z2mPermitJoin
         Image item=Z2mNetworkMap
+        Switch item=Z2MRefreshNetworkMap mappings=[REFRESH='REFRESH']
     }
 
     Frame label="XiaomiWSDCGQ11LM SENSOR"{
@@ -189,6 +190,14 @@ sitemap zigbee2mqtt label="Zigbee2Mqtt"
 ```
 
 ### .rules
+```
+rule "Refresh Z2MRefreshNetworkMap"
+when
+     Time cron "0 0 0 * * ?"
+then
+    RefreshMap.sendCommand("REFRESH")
+end
+```
 ```
  rule "Zigbee2Mqtt Cube SLIDE"
  when
