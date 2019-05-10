@@ -39,6 +39,7 @@ Currently following Things are supported:
 ## Discovery
 
 The Binding supports two ways of configuration. Auto-discovery and manual configuration. Once the binding has been installed your network will be scanned on port 1883 to find any MQTT broker with disabled username/password authentication. It will then automatically add the required things **Zigbee2Mqtt Server**  and **Zigbee2Mqtt Device**.
+
 Manual configuration can be achieved via PaperUI - Configuration - Things - Add Thing “+” Button - Zigbee2mqtt Binding - Add manually - **Zigbee2Mqtt Server**. Here you can provide your broker IP, port, login credentials and if needed modified zigbee2mqtt base/dicover topics. Once the server thing has been added **Zigbee2Mqtt Device**s will be discovered automatically and appear in your PaperUI inbox. You just need to add them as new things.
 
 If new devices joined to the network ([documentation](http://www.zigbee2mqtt.io/getting_started/pairing_devices.html)) they will automatically appear in the INBOX.
